@@ -1,0 +1,13 @@
+#pragma once
+
+namespace gltest {
+
+const char VERSION[]      = "@PROJECT_VERSION@";
+const char VERSION_FULL[] = "@PROJECT_VERSION@:@PROJECT_BUILD_COMMIT@";
+const int  VERSION_MAJOR  = @PROJECT_VERSION_MAJOR@;
+const int  VERSION_MINOR  = @PROJECT_VERSION_MINOR@;
+const int  VERSION_PATCH  = @PROJECT_VERSION_PATCH@;
+const char BUILD_COMMIT[] = "@PROJECT_BUILD_COMMIT@";
+const char BUILD_TIME[]   = "@PROJECT_BUILD_TIME@";
+
+} // ns glare
