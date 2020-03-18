@@ -55,10 +55,7 @@ set(SOURCES
     src/model/model_loader.cpp
     src/model/model.cpp
     src/opengl/context.cpp
-
-    src/app/main.cpp
-    src/app/app_context.hpp
-    src/app/app_context.cpp)
+)
 
 set(TEST_SOURCES
     tests/shader/shader_preprocessor_test.cpp)
