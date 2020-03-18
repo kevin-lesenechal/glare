@@ -102,3 +102,4 @@ list(REMOVE_ITEM APP_SOURCES "src/app/main.cpp")
 
 add_executable(glare ${SOURCES})
 target_link_libraries(glare ${APP_LIBS})
+add_subdirectory(libs/gl_tables)
