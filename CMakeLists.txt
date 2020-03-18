@@ -17,8 +17,8 @@ set(SOURCES
     src/third_party/imgui_widgets.cpp
 
     include/glare/opengl/buffer.hpp
-    include/glare/opengl/shader.hpp
-    include/glare/opengl/shader_program.hpp
+    include/glare/shader/shader.hpp
+    include/glare/shader/shader_program.hpp
     include/glare/opengl/vertex_array.hpp
     include/glare/opengl/texture.hpp
     include/glare/primitive/axis.hpp
@@ -26,7 +26,7 @@ set(SOURCES
     include/glare/shader/shader_source_loader_interface.hpp
     include/glare/shader/fs_shader_source_loader.hpp
     include/glare/fps_camera.hpp
-    include/glare/debug/debug_window.hpp
+    include/glare/ui/debug_window.hpp
     include/glare/ui/checkbox.hpp
     include/glare/ui/ui_context.hpp
     include/glare/ui/light_config.hpp
@@ -37,15 +37,15 @@ set(SOURCES
     include/glare/model/model.hpp
     include/glare/opengl/context.hpp
 
-    src/opengl/shader_program.cpp
-    src/opengl/shader.cpp
+    src/shader/shader_program.cpp
+    src/shader/shader.cpp
     src/opengl/vertex_array.cpp
     src/opengl/texture.cpp
     src/primitive/axis.cpp
     src/shader/shader_preprocessor.cpp
     src/shader/fs_shader_source_loader.cpp
     src/fps_camera.cpp
-    src/debug/debug_window.cpp
+    src/ui/debug_window.cpp
     src/ui/checkbox.cpp
     src/ui/ui_context.cpp
     src/ui/light_config.cpp

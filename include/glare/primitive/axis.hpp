@@ -1,7 +1,7 @@
 #pragma once
 
-#include <glare/opengl/shader.hpp>
-#include <glare/opengl/shader_program.hpp>
+#include <glare/shader/shader.hpp>
+#include <glare/shader/shader_program.hpp>
 #include <glare/opengl/buffer.hpp>
 #include <glare/opengl/vertex_array.hpp>
 

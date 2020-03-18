@@ -33,11 +33,13 @@ public:
     void load_source(const std::string& glsl_src);
     void compile();
 
-    [[nodiscard]] GLuint id() const noexcept { return m_id; }
+    [[nodiscard]]
+    GLuint id() const noexcept { return m_id; }
 
 public:
-    [[nodiscard]] static Shader from_source_file(Type type,
-                                                 const std::string& source_file);
+    // TODO: move this out
+    [[nodiscard]]
+    static Shader from_source_file(Type type, const std::string& source_file);
 
 private:
     Type    m_type;

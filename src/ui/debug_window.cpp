@@ -1,9 +1,10 @@
 #include <epoxy/gl.h>
 
-#include "glare/debug/debug_window.hpp"
+#include "glare/ui/debug_window.hpp"
 
 #include <imgui/imgui.h>
 #include <GLFW/glfw3.h>
+#include <iostream>
 
 namespace imgui = ImGui;
 
@@ -45,6 +46,11 @@ void DebugWindow::draw()
     m_wireframe.draw();
     m_vsync.draw();
     m_culling.draw();
+
+    if (imgui::Button("Reload shaders")) {
+        std::cout << "reload!" << std::endl;
+    }
+
     imgui::End();
 }
 

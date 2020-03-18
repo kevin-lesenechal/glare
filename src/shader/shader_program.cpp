@@ -2,8 +2,8 @@
 #include <glm/gtc/type_ptr.hpp>
 #include <iostream>
 
-#include "glare/opengl/shader_program.hpp"
-#include "glare/opengl/shader.hpp"
+#include "glare/shader/shader_program.hpp"
+#include "glare/shader/shader.hpp"
 
 namespace glare {
 

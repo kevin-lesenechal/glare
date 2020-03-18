@@ -1,4 +1,4 @@
-#include "glare/opengl/shader.hpp"
+#include "glare/shader/shader.hpp"
 
 namespace glare {
 
