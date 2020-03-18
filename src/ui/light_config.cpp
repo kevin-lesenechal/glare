@@ -11,11 +11,11 @@ LightConfig::LightConfig(const std::string& title,
                          const glm::vec3& ambient,
                          const glm::vec3& diffuse,
                          const glm::vec3& specular)
-  : m_title(title),
-    position(position),
+  : position(position),
     ambient(ambient),
     diffuse(diffuse),
-    specular(specular)
+    specular(specular),
+    m_title(title)
 {}
 
 void LightConfig::draw()
