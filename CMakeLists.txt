@@ -82,13 +82,11 @@ set(CMAKE_CXX_FLAGS_RELEASE "-s -O3 -flto")
 
 find_package(OpenGL REQUIRED COMPONENTS OpenGL)
 find_package(glfw3 3.3 REQUIRED)
-find_package(Boost COMPONENTS filesystem REQUIRED)
 find_package(assimp REQUIRED)
 
 set(APP_LIBS
     OpenGL::OpenGL
     glfw
-    Boost::filesystem
     epoxy
     assimp)
 
