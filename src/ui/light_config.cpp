@@ -1,4 +1,5 @@
 #include "glare/ui/light_config.hpp"
+#include "glare/ui/widget/color_temp_picker.hpp"
 
 #include <imgui/imgui.h>
 

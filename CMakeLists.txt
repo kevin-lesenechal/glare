@@ -43,6 +43,8 @@ set(SOURCES
     include/glare/shader/phong_shading.hpp
     include/glare/shader/shading_interface.hpp
     include/glare/material/ktx_loader.hpp
+    include/glare/ui/widget/color_temp_picker.hpp
+    include/glare/material/color_utils.hpp
 
     src/shader/shader_program.cpp
     src/shader/shader.cpp
@@ -65,7 +67,9 @@ set(SOURCES
     src/material/texture_loader.cpp
     src/material/texture_library.cpp
     src/shader/phong_shading.cpp
-    src/material/ktx_loader.cpp)
+    src/material/ktx_loader.cpp
+    src/ui/widget/color_temp_picker.cpp
+    src/material/color_utils.cpp)
 
 set(TEST_SOURCES
     tests/shader/shader_preprocessor_test.cpp)
