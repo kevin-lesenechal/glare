@@ -1,11 +1,12 @@
 #pragma once
 
 #include "mesh.hpp"
-#include "glare/opengl/shader_program.hpp"
 
 #include <vector>
 
 namespace glare {
+
+class ShadingInterface;
 
 class Model
 {
@@ -17,7 +18,7 @@ public:
     Model(Model&&) = default;
     Model& operator=(Model&&) = default;
 
-    void draw(ShaderProgram& program);
+    void draw(ShadingInterface& shading);
 
     void push_mesh(Mesh&& mesh);
 

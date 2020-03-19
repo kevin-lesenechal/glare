@@ -2,7 +2,7 @@
 
 #include "glare/opengl/vertex_array.hpp"
 #include "glare/opengl/buffer.hpp"
-#include "glare/opengl/shader_program.hpp"
+#include "glare/material/material.hpp"
 
 #include <glm/vec2.hpp>
 #include <glm/vec3.hpp>
@@ -10,6 +10,8 @@
 #include <vector>
 
 namespace glare {
+
+class ShadingInterface;
 
 class Mesh
 {
@@ -25,7 +27,8 @@ public:
 public:
     Mesh(
         const std::vector<VertexAttr>& vertices,
-        const std::vector<unsigned>& indices
+        const std::vector<unsigned>& indices,
+        std::shared_ptr<Material> material
     );
 
     Mesh(const Mesh&) = delete;
@@ -33,13 +36,14 @@ public:
     Mesh(Mesh&&) = default;
     Mesh& operator=(Mesh&&) = default;
 
-    void draw(ShaderProgram& program);
+    void draw(ShadingInterface& shading);
 
 private:
     VertexArray m_vao;
     VertexBuffer<float> m_vertices;
     ElementArrayBuffer<unsigned> m_indices;
     size_t m_indices_count;
+    std::shared_ptr<Material> m_material;
 };
 
 } // ns glare

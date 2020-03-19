@@ -36,6 +36,11 @@ set(SOURCES
     include/glare/model/model_loader.hpp
     include/glare/model/model.hpp
     include/glare/opengl/context.hpp
+    include/glare/material/texture_library.hpp
+    include/glare/material/texture_library_interface.hpp
+    include/glare/material/material.hpp
+    include/glare/shader/phong_shading.hpp
+    include/glare/shader/shading_interface.hpp
 
     src/shader/shader_program.cpp
     src/shader/shader.cpp
@@ -55,6 +60,8 @@ set(SOURCES
     src/model/model_loader.cpp
     src/model/model.cpp
     src/opengl/context.cpp
+    src/material/texture_library.cpp
+    src/shader/phong_shading.cpp
 )
 
 set(TEST_SOURCES

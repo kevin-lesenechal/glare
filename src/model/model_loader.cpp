@@ -1,12 +1,15 @@
 #include "glare/model/model_loader.hpp"
+#include "glare/material/texture_library_interface.hpp"
 
 #include <assimp/scene.h>
 #include <assimp/postprocess.h>
 
 namespace glare {
 
-ModelLoader::ModelLoader(Assimp::Importer& importer)
-  : m_importer(importer)
+ModelLoader::ModelLoader(Assimp::Importer& importer,
+                         TextureLibraryInterface& texture_library)
+  : m_importer(importer),
+    m_texture_library(texture_library)
 {}
 
 Model ModelLoader::load_from_file(const std::string& file_path)
@@ -77,7 +80,69 @@ Mesh ModelLoader::load_mesh(const aiScene* scene, const aiMesh* mesh)
         }
     }
 
-    return Mesh(vertices, indices);
+    auto material = std::make_shared<Material>();
+
+    aiMaterial* ai_material = scene->mMaterials[mesh->mMaterialIndex];
+    aiColor3D color;
+
+    ai_material->Get(AI_MATKEY_SHININESS, &material->shininess, nullptr);
+    ai_material->Get(AI_MATKEY_COLOR_AMBIENT, &color, nullptr);
+    material->ambient_color = {color.r, color.g, color.b};
+    ai_material->Get(AI_MATKEY_COLOR_DIFFUSE, &color, nullptr);
+    material->diffuse_color = {color.r, color.g, color.b};
+    ai_material->Get(AI_MATKEY_COLOR_SPECULAR, &color, nullptr);
+    material->specular_color = {color.r, color.g, color.b};
+
+    load_mesh_texture(ai_material, aiTextureType_DIFFUSE, *material);
+    load_mesh_texture(ai_material, aiTextureType_SPECULAR, *material);
+    load_mesh_texture(ai_material, aiTextureType_NORMALS, *material);
+    load_mesh_texture(ai_material, aiTextureType_HEIGHT, *material);
+
+    return Mesh(vertices, indices, std::move(material));
+}
+
+void ModelLoader::load_mesh_texture(aiMaterial* ai_material,
+                                    aiTextureType texture_type,
+                                    Material& material)
+{
+    unsigned tex_count = ai_material->GetTextureCount(texture_type);
+    if (tex_count == 0) {
+        return;
+    }
+
+    int unit;
+    switch (texture_type) {
+        case aiTextureType_DIFFUSE:     unit = 0; break;
+        case aiTextureType_SPECULAR:    unit = 1; break;
+        case aiTextureType_NORMALS:
+        case aiTextureType_HEIGHT:      unit = 2; break;
+        default:
+            return;
+    }
+
+    aiString ai_name;
+    // TODO: handle multiple textures
+    ai_material->GetTexture(texture_type, 0, &ai_name);
+    std::string name(ai_name.C_Str());
+    std::shared_ptr<Texture> texture = m_texture_library.get_texture(name, unit);
+
+    switch (texture_type) {
+        case aiTextureType_DIFFUSE:
+            material.texture = std::move(texture);
+            break;
+
+        case aiTextureType_SPECULAR:
+            material.specular_map = std::move(texture);
+            break;
+
+        case aiTextureType_NORMALS:
+        case aiTextureType_HEIGHT:
+            material.normal_map = std::move(texture);
+            break;
+
+        default:
+            std::abort();
+    }
 }
 
 } // ns glare

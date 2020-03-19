@@ -2,10 +2,10 @@
 
 namespace glare {
 
-void Model::draw(ShaderProgram& program)
+void Model::draw(ShadingInterface& shading)
 {
     for (auto& mesh : m_meshes) {
-        mesh.draw(program);
+        mesh.draw(shading);
     }
 }
 
