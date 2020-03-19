@@ -20,7 +20,7 @@ set(SOURCES
     include/glare/shader/shader.hpp
     include/glare/shader/shader_program.hpp
     include/glare/opengl/vertex_array.hpp
-    include/glare/opengl/texture.hpp
+    include/glare/material/texture.hpp
     include/glare/primitive/axis.hpp
     include/glare/shader/shader_preprocessor.hpp
     include/glare/shader/shader_source_loader_interface.hpp
@@ -36,16 +36,18 @@ set(SOURCES
     include/glare/model/model_loader.hpp
     include/glare/model/model.hpp
     include/glare/opengl/context.hpp
+    include/glare/material/texture_loader.hpp
     include/glare/material/texture_library.hpp
     include/glare/material/texture_library_interface.hpp
     include/glare/material/material.hpp
     include/glare/shader/phong_shading.hpp
     include/glare/shader/shading_interface.hpp
+    include/glare/material/ktx_loader.hpp
 
     src/shader/shader_program.cpp
     src/shader/shader.cpp
     src/opengl/vertex_array.cpp
-    src/opengl/texture.cpp
+    src/material/texture.cpp
     src/primitive/axis.cpp
     src/shader/shader_preprocessor.cpp
     src/shader/fs_shader_source_loader.cpp
@@ -60,9 +62,10 @@ set(SOURCES
     src/model/model_loader.cpp
     src/model/model.cpp
     src/opengl/context.cpp
+    src/material/texture_loader.cpp
     src/material/texture_library.cpp
     src/shader/phong_shading.cpp
-)
+    src/material/ktx_loader.cpp)
 
 set(TEST_SOURCES
     tests/shader/shader_preprocessor_test.cpp)

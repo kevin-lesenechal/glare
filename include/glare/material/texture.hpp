@@ -42,7 +42,7 @@ public:
     };
 
 public:
-    Texture(int unit, Type type);
+    explicit Texture(Type type, int unit = 0);
 
     Texture(const Texture&) = delete;
     Texture& operator=(const Texture&) = delete;
@@ -52,12 +52,35 @@ public:
     ~Texture() noexcept;
 
     void bind();
+
+    void set_image(GLenum target, int level, unsigned width, unsigned height,
+                   GLenum internal_format, PixelFormat px_format,
+                   GLenum px_type, uint8_t* data);
+
     void set_image(int level, unsigned width, unsigned height,
                    GLenum internal_format, PixelFormat px_format,
                    GLenum px_type, uint8_t* data);
-    void generate_mipmap();
 
+    void set_compressed_image(GLenum target, int level,
+                              unsigned width, unsigned height,
+                              GLenum internal_format,
+                              uint8_t* data, size_t size);
+
+    void set_compressed_image(int level, unsigned width, unsigned height,
+                              GLenum internal_format,
+                              uint8_t* data, size_t size);
+
+    void generate_mipmap();
+    void set_parameter(GLenum param, int value);
+
+    [[nodiscard]]
+    GLuint id() const noexcept { return m_id; }
+
+    [[nodiscard]]
     int unit() const noexcept { return m_unit; }
+
+    [[nodiscard]]
+    Type type() const noexcept { return m_type; }
 
 private:
     int    m_unit;
