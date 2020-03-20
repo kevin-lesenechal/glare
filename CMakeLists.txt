@@ -109,8 +109,9 @@ list(REMOVE_ITEM APP_SOURCES "src/app/main.cpp")
 
 #---- OUTPUT ------------------------------------------------------------------#
 
-add_subdirectory(libs/gl_tables)
-add_subdirectory(tools/ktx_assemble)
-
 add_library(glare ${SOURCES})
 target_link_libraries(glare ${APP_LIBS} gl_tables)
+
+add_subdirectory(libs/gl_tables)
+add_subdirectory(libs/simple_ktx)
+add_subdirectory(tools/ktx_assemble)
