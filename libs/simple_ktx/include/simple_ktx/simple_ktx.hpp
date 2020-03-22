@@ -49,7 +49,7 @@ struct KtxFileHeader
         pixel_height(0),
         pixel_depth(0),
         nr_array_elements(0),
-        nr_faces(0),
+        nr_faces(1),
         nr_mipmap_levels(0),
         key_value_bytes(0)
     {
