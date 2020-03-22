@@ -10,6 +10,8 @@
 #include <epoxy/gl.h>
 #include <vector>
 
+#include "extensions.hpp"
+
 namespace glare {
 
 enum class BufferType : GLint {
@@ -49,7 +51,11 @@ public:
       : m_last_usage(BufferUsage::StaticDraw),
         m_value_count(0)
     {
-        glGenBuffers(1, &m_id);
+        if (ext::has_dsa) {
+            glCreateBuffers(1, &m_id);
+        } else {
+            glGenBuffers(1, &m_id);
+        }
     }
 
     explicit Buffer(BufferUsage usage, const std::vector<T>& data)
@@ -93,13 +99,23 @@ public:
 
     void upload(BufferUsage usage, const T* data, size_t value_count)
     {
-        bind();
-        glBufferData(
-            static_cast<GLenum>(Type),
-            value_count * sizeof (T),
-            data,
-            static_cast<GLenum>(usage)
-        );
+        if (ext::has_dsa) {
+            glNamedBufferData(
+                m_id,
+                value_count * sizeof(T),
+                data,
+                static_cast<GLenum>(usage)
+            );
+        } else {
+            bind();
+            glBufferData(
+                static_cast<GLenum>(Type),
+                value_count * sizeof(T),
+                data,
+                static_cast<GLenum>(usage)
+            );
+        }
+
         m_last_usage  = usage;
         m_value_count = value_count;
     }
@@ -114,6 +130,7 @@ public:
         upload(m_last_usage, data);
     }
 
+    [[nodiscard]] GLuint id() const noexcept { return m_id; }
     [[nodiscard]] size_t value_count() const noexcept { return m_value_count; }
 
 private:
