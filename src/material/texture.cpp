@@ -103,4 +103,14 @@ void Texture::set_parameter(GLenum param, int value)
     glTexParameteri(static_cast<GLenum>(m_type), param, value);
 }
 
+void Texture::set_parameter(GLenum param, float value)
+{
+    if (ext::has_dsa) {
+        glTextureParameterf(m_id, param, value);
+    } else {
+        bind();
+        glTexParameterf(static_cast<GLenum>(m_type), param, value);
+    }
+}
+
 } // ns glare

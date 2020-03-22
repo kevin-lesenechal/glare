@@ -78,7 +78,10 @@ public:
                               uint8_t* data, size_t size);
 
     void generate_mipmap();
+
     void set_parameter(GLenum param, int value);
+
+    void set_parameter(GLenum param, float value);
 
     [[nodiscard]]
     GLuint id() const noexcept { return m_id; }
