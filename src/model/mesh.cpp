@@ -39,6 +39,7 @@ Mesh::Mesh(const std::vector<VertexAttr>& vertices,
     m_vao.attach(4, m_vertices, 3, vert_memsz, offsetof(VertexAttr, bitangent));
 
     m_indices.upload(BufferUsage::StaticDraw, indices);
+    m_vao.attach(m_indices);
 }
 
 void Mesh::draw(ShadingInterface& shading)

@@ -31,6 +31,7 @@ public:
     VertexArray& operator=(VertexArray&& other) noexcept;
 
     void bind();
+    void unbind();
     void enable(unsigned location);
     void disable(unsigned location);
 
@@ -59,6 +60,18 @@ public:
         }
 
         enable(location);
+    }
+
+    template<typename T>
+    void attach(ElementArrayBuffer<T>& ebo)
+    {
+        if (ext::has_dsa) {
+            glVertexArrayElementBuffer(m_id, ebo.id());
+        } else {
+            bind();
+            ebo.bind();
+            unbind();
+        }
     }
 
     ~VertexArray() noexcept;

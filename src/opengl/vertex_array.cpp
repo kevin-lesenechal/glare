@@ -11,7 +11,11 @@ namespace glare {
 
 VertexArray::VertexArray()
 {
-    glGenVertexArrays(1, &m_id);
+    if (ext::has_dsa) {
+        glCreateVertexArrays(1, &m_id);
+    } else {
+        glGenVertexArrays(1, &m_id);
+    }
 }
 
 VertexArray::VertexArray(VertexArray&& other) noexcept
@@ -41,16 +45,31 @@ void VertexArray::bind()
     glBindVertexArray(m_id);
 }
 
+void VertexArray::unbind()
+{
+    glBindVertexArray(0);
+}
+
 void VertexArray::enable(unsigned location)
 {
-    bind();
-    glEnableVertexAttribArray(location);
+    if (ext::has_dsa) {
+        glEnableVertexArrayAttrib(m_id, location);
+    } else {
+        bind();
+        glEnableVertexAttribArray(location);
+        unbind();
+    }
 }
 
 void VertexArray::disable(unsigned location)
 {
-    bind();
-    glDisableVertexAttribArray(location);
+    if (ext::has_dsa) {
+        glDisableVertexArrayAttrib(m_id, location);
+    } else {
+        bind();
+        glDisableVertexAttribArray(location);
+        unbind();
+    }
 }
 
 } // ns glare
