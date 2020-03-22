@@ -9,6 +9,9 @@
 
 #include <epoxy/gl.h>
 
+#include "glare/sizes.hpp"
+#include "glare/points.hpp"
+
 namespace glare {
 
 class Texture
@@ -29,25 +32,6 @@ public:
         Texture2DMultisampleArray = GL_TEXTURE_2D_MULTISAMPLE_ARRAY,
     };
 
-    enum class PixelFormat : GLenum
-    {
-        R               = GL_RED,
-        RG              = GL_RG,
-        RGB             = GL_RGB,
-        BGR             = GL_BGR,
-        RGBA            = GL_RGBA,
-        BGRA            = GL_BGRA,
-        IntR            = GL_RED_INTEGER,
-        IntRG           = GL_RG_INTEGER,
-        IntRGB          = GL_RGB_INTEGER,
-        IntBGR          = GL_BGR_INTEGER,
-        IntRGBA         = GL_RGBA_INTEGER,
-        IntBGRA         = GL_BGRA_INTEGER,
-        StencilIndex    = GL_STENCIL_INDEX,
-        DepthComponent  = GL_DEPTH_COMPONENT,
-        DepthStencil    = GL_DEPTH_STENCIL,
-    };
-
 public:
     explicit Texture(Type type, int unit = 0);
 
@@ -60,22 +44,51 @@ public:
 
     void bind();
 
-    void set_image(GLenum target, int level, unsigned width, unsigned height,
-                   GLenum internal_format, PixelFormat px_format,
-                   GLenum px_type, uint8_t* data);
+    void set_image(GLenum target,
+                   int mipmap_level,
+                   AnySize image_size,
+                   GLenum internal_format,
+                   GLenum data_format,
+                   GLenum data_type,
+                   const uint8_t* data);
 
-    void set_image(int level, unsigned width, unsigned height,
-                   GLenum internal_format, PixelFormat px_format,
-                   GLenum px_type, uint8_t* data);
+    void set_image(int mipmap_level,
+                   AnySize image_size,
+                   GLenum internal_format,
+                   GLenum data_format,
+                   GLenum data_type,
+                   const uint8_t* data);
 
-    void set_compressed_image(GLenum target, int level,
-                              unsigned width, unsigned height,
+    void set_compressed_image(GLenum target,
+                              int mipmap_level,
+                              AnySize image_size,
                               GLenum internal_format,
-                              uint8_t* data, size_t size);
+                              const uint8_t* data,
+                              size_t size);
 
-    void set_compressed_image(int level, unsigned width, unsigned height,
+    void set_compressed_image(int mipmap_level,
+                              AnySize image_size,
                               GLenum internal_format,
-                              uint8_t* data, size_t size);
+                              const uint8_t* data,
+                              size_t size);
+
+    void set_subimage(int mipmap_level,
+                      AnySize image_size,
+                      GLenum data_format,
+                      GLenum data_type,
+                      const uint8_t* data,
+                      AnyPoint offset = Point3D(0, 0, 0));
+
+    void set_compressed_subimage(int mipmap_level,
+                                 AnySize image_size,
+                                 GLenum data_format,
+                                 size_t data_size,
+                                 const uint8_t* data,
+                                 AnyPoint offset = Point3D(0, 0, 0));
+
+    void allocate_storage(GLint internal_format,
+                          unsigned mipmap_levels,
+                          AnySize size);
 
     void generate_mipmap();
 
@@ -92,10 +105,26 @@ public:
     [[nodiscard]]
     Type type() const noexcept { return m_type; }
 
+public:
+    static AnySize size_param_for(Type type,
+                                  unsigned width,
+                                  unsigned height,
+                                  unsigned depth,
+                                  unsigned array_layer,
+                                  unsigned faces);
+
+    static AnySize index_param_for(Type type,
+                                   unsigned width,
+                                   unsigned height,
+                                   unsigned depth,
+                                   unsigned array_layer,
+                                   unsigned face_index);
+
 private:
     int    m_unit;
     Type   m_type;
     GLuint m_id;
+    bool   m_immutable;
 };
 
 } // ns glare
