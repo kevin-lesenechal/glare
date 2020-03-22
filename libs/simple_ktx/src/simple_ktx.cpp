@@ -116,6 +116,11 @@ void write_ktx_header(std::ostream& output, KtxFile& file)
         output.write(reinterpret_cast<const char*>(&kv_size), sizeof kv_size);
         output.write(kv.first.c_str(), kv.first.size() + 1);
         output.write(kv.second.c_str(), kv.second.size() + 1);
+
+        size_t padlen = 3 - ((kv_size + 3) % 4);
+        for (size_t i = 0; i < padlen; ++i) {
+            output.put('\0');
+        }
     }
 
     output.exceptions(except);
