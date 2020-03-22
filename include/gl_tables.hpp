@@ -63,5 +63,6 @@ struct FormatBlockSize
 };
 
 FormatBlockSize format_block_size(GLenum internal_format);
+GLenum base_format_for_internal(GLenum internal_format);
 
 } // ns gl_tables
