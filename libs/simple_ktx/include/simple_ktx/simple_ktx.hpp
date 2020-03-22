@@ -89,4 +89,6 @@ public:
 KtxFile read_ktx_header(std::istream& input);
 void write_ktx_header(std::ostream& output, KtxFile& file);
 
+void print_header(FILE* fh, const KtxFileHeader& header);
+
 } // ns simple_ktx

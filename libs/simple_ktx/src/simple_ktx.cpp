@@ -126,6 +126,28 @@ void write_ktx_header(std::ostream& output, KtxFile& file)
     output.exceptions(except);
 }
 
+void print_header(FILE* fh, const KtxFileHeader& h)
+{
+    std::string type = gl_tables::type_name(h.gl_type);
+    std::string format = gl_tables::format_name(h.gl_format);
+    std::string in_format = gl_tables::internal_format_name(h.gl_internal_format);
+
+    fprintf(fh, "    Dimensions       %u × %u × %u\n",
+            h.pixel_width, h.pixel_height, h.pixel_depth);
+    fprintf(fh, "    Type             0x%.4x  %s  [size = %u]\n",
+            h.gl_type, type.c_str(), h.gl_type_size);
+    fprintf(fh, "    Format           0x%.4x  %s\n",
+            h.gl_format, format.c_str());
+    fprintf(fh, "    Internal format  0x%.4x  %s\n",
+            h.gl_internal_format, in_format.c_str());
+    fprintf(fh, "    # array elems.   %u\n",
+            h.nr_array_elements);
+    fprintf(fh, "    # faces          %u\n",
+            h.nr_faces);
+    fprintf(fh, "    # mipmap levels  %u\n",
+            h.nr_mipmap_levels);
+}
+
 KtxImageReader KtxFile::read_images_from(std::istream& input)
 {
     return KtxImageReader(*this, input);
