@@ -6,121 +6,160 @@
  ******************************************************************************/
 
 #include "glare/material/ktx_loader.hpp"
-#include "glare/material/texture.hpp"
+#include "glare/opengl/extensions.hpp"
 
-#include <gl_tables.hpp>
-
-#include <cstring>
-#include <memory>
+namespace ktx = simple_ktx;
 
 namespace glare {
 
-KtxFileLoader::KtxFileLoader()
-{}
+KtxFileLoader::KtxFileLoader() = default;
 
 Texture KtxFileLoader::load_texture(std::istream& input, int unit)
 {
-    KtxFileHeader header;
+    ktx::KtxFile file = ktx::read_ktx_header(input);
+    ktx::KtxFileHeader& header = file.header;
 
-    input.read(reinterpret_cast<char*>(&header), sizeof header);
-
-    if (std::memcmp(header.magic, KtxFileHeader::MAGIC, sizeof header.magic) != 0) {
-        throw std::runtime_error("KTX: invalid magic signature in header");
+    unsigned nr_mipmaps = header.nr_mipmap_levels;
+    if (nr_mipmaps == 0) {
+        throw std::runtime_error("Not implemented, calculate mipmaps for storage");
+        nr_mipmaps = 1;
     }
 
-    if (header.nr_array_elements == 0 && header.nr_faces == 1) {
-        Texture texture(Texture::Type::Texture2D, unit);
-        load_mipmap_levels(header, input, texture);
-        return texture;
-    } else if (header.nr_array_elements == 0 && header.nr_faces == 6) {
-        Texture texture(Texture::Type::CubeMap, unit);
-        load_mipmap_levels(header, input, texture);
-        return texture;
-    } else {
-        throw std::runtime_error("KTX: texture type not supported");
-    }
-}
-
-void KtxFileLoader::load_mipmap_levels(const KtxFileHeader& header,
-                                       std::istream& input,
-                                       Texture& texture)
-{
-    unsigned level_count;
-    if (header.nr_mipmap_levels == 0) {
-        level_count = 1;
-    } else {
-        level_count = header.nr_mipmap_levels;
+    if (file.key_values["KTXorientation"] != "S=r,T=u") {
+        throw std::runtime_error(
+            "The GLARE's KTX file loader requires textures to have the OpenGL "
+            "orientation (i.e. 0,0 on the bottom left)"
+        );
     }
 
-    for (unsigned level = 0; level < level_count; ++level) {
-        uint32_t total_level_size;
-        input.read(
-            reinterpret_cast<char*>(&total_level_size),
-            sizeof total_level_size
+    Texture texture(texture_type(header), unit);
+    AnySize total_size = Texture::size_param_for(
+        texture.type(),
+        header.pixel_width,
+        header.pixel_height,
+        header.pixel_depth,
+        header.nr_array_elements,
+        header.nr_faces
+    );
+
+    if (ext::has_tex_storage) {
+        texture.allocate_storage(
+            header.gl_internal_format,
+            nr_mipmaps,
+            total_size
+        );
+    }
+
+    for (const auto& image : file.read_images_from(input)) {
+        AnySize image_size = Texture::index_param_for(
+            texture.type(),
+            image.px_width,
+            image.px_height,
+            image.z_slice,
+            image.array_index,
+            image.face_index
         );
 
-        switch (texture.type()) {
-            case Texture::Type::Texture2D:
-                load_image(header, input, texture, level, GL_TEXTURE_2D);
-                break;
+        AnyPoint offset = Point3D(0, 0, 0);
 
-            case Texture::Type::CubeMap:
-                for (unsigned i = 0; i < header.nr_faces; ++i) {
-                    load_image(header, input, texture, level,
-                               GL_TEXTURE_CUBE_MAP_POSITIVE_X + i);
-                }
-                break;
+        GLenum tex_target = static_cast<GLenum>(texture.type());
+        if (texture.type() == Texture::Type::CubeMap) {
+            tex_target = GL_TEXTURE_CUBE_MAP_POSITIVE_X + image.face_index;
+            image_size.size_3d.depth = 1;
+            offset.point_3d.z = image.face_index;
+        }
 
-            default:
-                std::abort();
+        if (header.gl_type == 0) { // Compressed
+            if (ext::has_tex_storage) {
+                texture.set_compressed_subimage(
+                    static_cast<int>(image.mipmap_level),
+                    image_size,
+                    header.gl_internal_format,
+                    image.data.size(),
+                    image.data.data(),
+                    offset
+                );
+            } else {
+                texture.set_compressed_image(
+                    tex_target,
+                    static_cast<int>(image.mipmap_level),
+                    image_size,
+                    header.gl_internal_format,
+                    image.data.data(), image.data.size()
+                );
+            }
+        } else {
+            if (ext::has_tex_storage) {
+                texture.set_subimage(
+                    static_cast<int>(image.mipmap_level),
+                    image_size,
+                    header.gl_format,
+                    header.gl_type,
+                    image.data.data(),
+                    offset
+                );
+            } else {
+                texture.set_image(
+                    tex_target,
+                    static_cast<int>(image.mipmap_level),
+                    image_size,
+                    header.gl_internal_format,
+                    header.gl_format,
+                    header.gl_type,
+                    image.data.data()
+                );
+            }
         }
     }
 
     if (header.nr_mipmap_levels == 0) {
         texture.generate_mipmap();
-    } else  if (header.nr_mipmap_levels > 1) {
-        texture.set_parameter(GL_TEXTURE_MAX_LEVEL, header.nr_mipmap_levels);
+    } else {
+        texture.set_parameter(GL_TEXTURE_BASE_LEVEL, 0);
+        texture.set_parameter(GL_TEXTURE_MAX_LEVEL,
+                              static_cast<int>(header.nr_mipmap_levels));
     }
+
+    texture.set_parameter(GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+    texture.set_parameter(GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
+    return texture;
 }
 
-void KtxFileLoader::load_image(const KtxFileHeader& header,
-                               std::istream& input,
-                               Texture& texture,
-                               unsigned level,
-                               GLenum tex_target)
+Texture::Type KtxFileLoader::texture_type(
+    const simple_ktx::KtxFileHeader& ktx_header)
 {
-    unsigned width = header.pixel_width >> level;
-    unsigned height = header.pixel_height >> level;
-    auto block_size = gl_tables::format_block_size(header.gl_internal_format);
-
-    // FIXME: height might be = 0 (1D)
-    size_t image_size = width * height
-                        * (block_size.size_bits / 8)
-                        / (block_size.width * block_size.height);
-    image_size = std::max(image_size, static_cast<size_t>(block_size.size_bits / 8));
-
-    auto image_data = std::unique_ptr<uint8_t[]>(new uint8_t[image_size]);
-    input.read(reinterpret_cast<char*>(image_data.get()), image_size);
-
-    if (header.gl_type == 0) { // Compressed
-        texture.set_compressed_image(
-            tex_target,
-            static_cast<int>(level),
-            width, height,
-            header.gl_internal_format,
-            image_data.get(), image_size
-        );
-    } else {
-        texture.set_image(
-            tex_target,
-            static_cast<int>(level),
-            width, height,
-            header.gl_internal_format,
-            static_cast<Texture::PixelFormat>(header.gl_format),
-            header.gl_type,
-            image_data.get()
-        );
+    if (ktx_header.pixel_width > 0
+        && ktx_header.pixel_height == 0
+        && ktx_header.pixel_depth == 0) {
+        if (ktx_header.nr_faces == 0 && ktx_header.nr_array_elements == 0) {
+            return Texture::Type::Texture1D;
+        } else if (ktx_header.nr_faces == 0) {
+            return Texture::Type::Texture1DArray;
+        }
+    } else if (ktx_header.pixel_width > 0
+               && ktx_header.pixel_height > 0
+               && ktx_header.pixel_depth == 0) {
+        if (ktx_header.nr_faces == 1 && ktx_header.nr_array_elements == 0) {
+            return Texture::Type::Texture2D;
+        } else if (ktx_header.nr_faces == 1) {
+            return Texture::Type::Texture2DArray;
+        } else if (ktx_header.nr_faces == 6) {
+            if (ktx_header.nr_array_elements == 0) {
+                return Texture::Type::CubeMap;
+            } else {
+                return Texture::Type::CubeMapArray;
+            }
+        }
+    } else if (ktx_header.pixel_width > 0
+               && ktx_header.pixel_height > 0
+               && ktx_header.pixel_depth > 0) {
+        if (ktx_header.nr_faces == 1 && ktx_header.nr_array_elements == 0) {
+            return Texture::Type::Texture3D;
+        }
     }
+
+    throw std::runtime_error("Unsupported texture type");
 }
 
 } // ns glare

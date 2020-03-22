@@ -82,6 +82,7 @@ set(TEST_SOURCES
 include_directories(include)
 include_directories(include/imgui)
 include_directories(${CMAKE_BINARY_DIR}/include)
+include_directories(libs/simple_ktx/include)
 
 set(CMAKE_CXX_STANDARD      17)
 set(CMAKE_CXX_FLAGS         "-std=c++17 -pedantic -Wall -Wextra")
@@ -112,9 +113,9 @@ list(REMOVE_ITEM APP_SOURCES "src/app/main.cpp")
 
 #---- OUTPUT ------------------------------------------------------------------#
 
-add_library(glare ${SOURCES})
-target_link_libraries(glare ${APP_LIBS} gl_tables)
-
 add_subdirectory(libs/gl_tables)
 add_subdirectory(libs/simple_ktx)
 add_subdirectory(tools/ktx_export)
+
+add_library(glare ${SOURCES})
+target_link_libraries(glare ${APP_LIBS} gl_tables simple_ktx)
