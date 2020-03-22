@@ -46,6 +46,8 @@ set(SOURCES
     include/glare/ui/widget/color_temp_picker.hpp
     include/glare/material/color_utils.hpp
     include/glare/opengl/extensions.hpp
+    include/glare/sizes.hpp
+    include/glare/points.hpp
 
     src/shader/shader_program.cpp
     src/shader/shader.cpp
