@@ -45,6 +45,7 @@ set(SOURCES
     include/glare/material/ktx_loader.hpp
     include/glare/ui/widget/color_temp_picker.hpp
     include/glare/material/color_utils.hpp
+    include/glare/opengl/extensions.hpp
 
     src/shader/shader_program.cpp
     src/shader/shader.cpp

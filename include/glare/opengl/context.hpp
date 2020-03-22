@@ -36,6 +36,9 @@ public:
 
 protected:
     GLFWwindow* m_window;
+
+private:
+    void query_extensions();
 };
 
 } // ns glare

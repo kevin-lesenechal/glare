@@ -8,6 +8,7 @@
 #include <epoxy/gl.h>
 
 #include "glare/opengl/context.hpp"
+#include "glare/opengl/extensions.hpp"
 
 #include <csignal>
 
@@ -121,6 +122,8 @@ Context::Context(unsigned window_width,
                               0, nullptr, GL_TRUE);
     }
 
+    query_extensions();
+
     glfwSetWindowUserPointer(m_window, this);
     glfwSetWindowSizeCallback(m_window, &on_glfw_window_resize);
 }
@@ -143,6 +146,17 @@ bool Context::is_running() const noexcept
 void Context::swap_buffers()
 {
     glfwSwapBuffers(m_window);
+}
+
+void Context::query_extensions()
+{
+#define TEST(var, name) ext::var = epoxy_has_gl_extension("GL_" #name)
+
+    TEST(has_dsa,                ARB_direct_state_access);
+    TEST(has_tex_storage,        ARB_texture_storage); // GL 4.3
+    TEST(has_anisotropic_filter, ARB_texture_filter_anisotropic); // GL 4.6
+
+#undef TEST
 }
 
 } // ns glare
