@@ -9,6 +9,13 @@
 
 namespace glare {
 
+void Model::draw()
+{
+    for (auto& mesh : m_meshes) {
+        mesh.draw();
+    }
+}
+
 void Model::draw(ShadingInterface& shading)
 {
     for (auto& mesh : m_meshes) {

@@ -25,6 +25,7 @@ public:
     Model(Model&&) = default;
     Model& operator=(Model&&) = default;
 
+    void draw();
     void draw(ShadingInterface& shading);
 
     void push_mesh(Mesh&& mesh);

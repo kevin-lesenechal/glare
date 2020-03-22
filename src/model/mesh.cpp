@@ -42,12 +42,16 @@ Mesh::Mesh(const std::vector<VertexAttr>& vertices,
     m_vao.attach(m_indices);
 }
 
-void Mesh::draw(ShadingInterface& shading)
+void Mesh::draw()
 {
     m_vao.bind();
-    shading.set_material(*m_material);
-
     glDrawElements(GL_TRIANGLES, m_indices_count, GL_UNSIGNED_INT, nullptr);
+}
+
+void Mesh::draw(ShadingInterface& shading)
+{
+    shading.set_material(*m_material);
+    draw();
 }
 
 } // ns glare

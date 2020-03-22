@@ -43,6 +43,7 @@ public:
     Mesh(Mesh&&) = default;
     Mesh& operator=(Mesh&&) = default;
 
+    void draw();
     void draw(ShadingInterface& shading);
 
 private:
