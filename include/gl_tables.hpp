@@ -35,8 +35,27 @@ inline std::string internal_format_name(GLenum value)
     return entry_name(Table::InternalFormat, value);
 }
 
+GLenum entry_value(Table table, const std::string& name);
+
+inline GLenum type_value(const std::string& name)
+{
+    return entry_value(Table::Types, name);
+}
+
+inline GLenum format_value(const std::string& name)
+{
+    return entry_value(Table::Format, name);
+}
+
+inline GLenum internal_format_value(const std::string& name)
+{
+    return entry_value(Table::InternalFormat, name);
+}
+
 struct FormatBlockSize
 {
+    bool    compressed;
+    bool    packed;
     uint8_t size_bits;
     uint8_t width;
     uint8_t height;

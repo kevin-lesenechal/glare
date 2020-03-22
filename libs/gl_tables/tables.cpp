@@ -1,3 +1,4 @@
+#include <cstring>
 #include "gl_tables.hpp"
 
 #define ENTRY(name) {#name, name}
@@ -180,6 +181,27 @@ std::string entry_name(Table table, GLenum value)
     }
 
     return "???";
+}
+
+GLenum entry_value(Table table, const std::string& name)
+{
+    TableEntry* entries;
+
+    switch (table) {
+    case Table::Types:          entries = g_types; break;
+    case Table::Format:         entries = g_formats; break;
+    case Table::InternalFormat: entries = g_internal_formats; break;
+    default:
+        std::abort();
+    }
+
+    for (unsigned i = 0; entries[i].name != nullptr; ++i) {
+        if (std::strcmp(entries[i].name, name.c_str()) == 0) {
+            return entries[i].value;
+        }
+    }
+
+    return 0;
 }
 
 } // gl_tables
