@@ -23,6 +23,43 @@ Texture TextureLoader::load_from_file(const fs::path& file_path, int unit)
         return load_from_ktx_file(file_path, unit);
     }
 
+    Texture texture(Texture::Type::Texture2D, unit);
+    load_into(file_path, texture);
+    texture.generate_mipmap();
+    texture.set_parameter(GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+    texture.set_parameter(GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
+    if (ext::has_anisotropic_filter) {
+        texture.set_parameter(
+            GL_TEXTURE_MAX_ANISOTROPY,
+            static_cast<float>(GL_MAX_TEXTURE_MAX_ANISOTROPY)
+        );
+    }
+
+    return texture;
+}
+
+Texture TextureLoader::load_from_ktx_file(const fs::path& file_path, int unit)
+{
+    KtxFileLoader loader;
+
+    std::ifstream stream;
+    stream.exceptions(std::ifstream::failbit);
+    stream.open(file_path, std::ios::binary);
+
+    return loader.load_texture(stream, unit);
+}
+
+void TextureLoader::load_into(const std::filesystem::path& file_path,
+                              Texture& texture)
+{
+    load_into(file_path, texture, static_cast<GLenum>(texture.type()));
+}
+
+void TextureLoader::load_into(const std::filesystem::path& file_path,
+                              Texture& texture,
+                              GLenum target)
+{
     int tex_width, tex_height, tex_channels;
 
     stbi_set_flip_vertically_on_load(true);
@@ -37,33 +74,18 @@ Texture TextureLoader::load_from_file(const fs::path& file_path, int unit)
         throw 42; // FIXME: proper exception
     }
 
-    Texture texture(Texture::Type::Texture2D, unit);
     // FIXME: set proper source format (RGB / RGBA)
-    texture.set_image(0, tex_width, tex_height, GL_RGB,
-                      Texture::PixelFormat::RGBA, GL_UNSIGNED_BYTE, tex_data);
-    texture.generate_mipmap();
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-
-    if (epoxy_has_gl_extension("GL_ARB_texture_filter_anisotropic")) {
-        glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAX_ANISOTROPY,
-                        GL_MAX_TEXTURE_MAX_ANISOTROPY);
-    }
+    texture.set_image(
+        target,
+        0,
+        Size2D(tex_width, tex_height),
+        GL_RGBA8,
+        GL_RGBA,
+        GL_UNSIGNED_BYTE,
+        tex_data
+    );
 
     stbi_image_free(tex_data);
-
-    return texture;
-}
-
-Texture TextureLoader::load_from_ktx_file(const fs::path& file_path, int unit)
-{
-    KtxFileLoader loader;
-
-    std::ifstream stream;
-    stream.exceptions(std::ifstream::failbit);
-    stream.open(file_path, std::ios::binary);
-
-    return loader.load_texture(stream, unit);
 }
 
 } // ns glare

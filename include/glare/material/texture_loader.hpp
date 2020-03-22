@@ -7,6 +7,7 @@
 
 #pragma once
 
+#include <epoxy/gl.h>
 #include <filesystem>
 
 namespace glare {
@@ -16,10 +17,18 @@ class Texture;
 class TextureLoader
 {
 public:
+    [[nodiscard]]
     Texture load_from_file(const std::filesystem::path& file_path,
                            int unit = 0);
 
+    void load_into(const std::filesystem::path& file_path, Texture& texture);
+
+    void load_into(const std::filesystem::path& file_path,
+                   Texture& texture,
+                   GLenum target);
+
 private:
+    [[nodiscard]]
     Texture load_from_ktx_file(const std::filesystem::path& file_path,
                                int unit = 0);
 };
