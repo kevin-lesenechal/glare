@@ -27,8 +27,8 @@ public:
         glm::vec3 position;
         glm::vec3 normal;
         glm::vec2 tex_coord;
-        glm::vec3 tangent;
-        glm::vec3 bitangent;
+        glm::vec3 tangent = {0.0f, 0.0f, 0.0f};
+        glm::vec3 bitangent = {0.0f, 0.0f, 0.0f};
     };
 
 public:
