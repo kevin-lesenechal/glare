@@ -1,0 +1,12 @@
+{
+   nvidia-glcore
+   Memcheck:Leak
+   ...
+   obj:/usr/lib/libnvidia-glcore.so*
+}
+{
+   nvidia-glx
+   Memcheck:Leak
+   ...
+   obj:/usr/lib/libGLX_nvidia.so*
+}
