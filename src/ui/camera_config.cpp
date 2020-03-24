@@ -8,7 +8,7 @@
 #include "glare/ui/camera_config.hpp"
 #include "glare/camera.hpp"
 
-#include <imgui/imgui.h>
+#include <imgui.h>
 
 namespace imgui = ImGui;
 

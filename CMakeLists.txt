@@ -9,13 +9,6 @@ set(GIT_EXECUTABLE "git" CACHE FILEPATH "git executable file or command")
 #---- SOURCES -----------------------------------------------------------------#
 
 set(SOURCES
-    src/third_party/stb_image.cpp
-    src/third_party/imgui.cpp
-    src/third_party/imgui_impl_glfw.cpp
-    src/third_party/imgui_impl_opengl3.cpp
-    src/third_party/imgui_draw.cpp
-    src/third_party/imgui_widgets.cpp
-
     include/glare/opengl/buffer.hpp
     include/glare/shader/shader.hpp
     include/glare/shader/shader_program.hpp
@@ -79,15 +72,9 @@ set(TEST_SOURCES
 
 #---- BUILD OPTIONS -----------------------------------------------------------#
 
-include_directories(include)
-include_directories(include/imgui)
-include_directories(${CMAKE_BINARY_DIR}/include)
-include_directories(libs/simple_ktx/include)
-
-set(CMAKE_CXX_STANDARD      17)
-set(CMAKE_CXX_FLAGS         "-std=c++17 -pedantic -Wall -Wextra")
-set(CMAKE_CXX_FLAGS_DEBUG   "-g")
-set(CMAKE_CXX_FLAGS_RELEASE "-s -O3 -flto")
+set(DEBUG_FLAGS         "-pedantic" "-Wall" "-Wextra")
+set(OPTIM_DEBUG_FLAGS   "-O3")
+set(RELEASE_FLAGS       "-O3" "-s")
 
 #---- LIBRARIES ---------------------------------------------------------------#
 
@@ -104,18 +91,48 @@ set(APP_LIBS
 #------------------------------------------------------------------------------#
 
 include(cmake/buildconfig.cmake)
-#include(cmake/tests.cmake)
 
 set(APP_SOURCES ${SOURCES})
 list(REMOVE_ITEM APP_SOURCES "src/app/main.cpp")
-#add_executable(tests ${TEST_SOURCES} ${APP_SOURCES})
-#target_link_libraries(tests gtest_main)
+
+option(PACKAGE_TESTS "Build the tests" ON)
+if (PACKAGE_TESTS)
+    enable_testing()
+    include(GoogleTest)
+    add_subdirectory(tests)
+endif()
 
 #---- OUTPUT ------------------------------------------------------------------#
 
 add_subdirectory(libs/gl_tables)
 add_subdirectory(libs/simple_ktx)
+add_subdirectory(libs/imgui)
+add_subdirectory(libs/stb_image)
 add_subdirectory(tools/ktx_export)
 
 add_library(glare ${SOURCES})
-target_link_libraries(glare ${APP_LIBS} gl_tables simple_ktx)
+target_link_libraries(glare
+    ${APP_LIBS}
+    gl_tables
+    simple_ktx
+    imgui
+    stb_image
+)
+target_include_directories(glare
+    PUBLIC include
+    PUBLIC ${CMAKE_BINARY_DIR}/include
+    PUBLIC libs/gl_tables/include
+    PUBLIC libs/simple_ktx/include
+    PUBLIC libs/imgui/include
+    PUBLIC libs/stb_image/include
+)
+set_target_properties(glare PROPERTIES
+    CXX_STANDARD 17
+    CXX_STANDARD_REQUIRED YES
+    INTERPROCEDURAL_OPTIMIZATION YES
+)
+target_compile_options(glare
+    PUBLIC "$<$<CONFIG:Debug>:${DEBUG_FLAGS}>"
+    PUBLIC "$<$<CONFIG:RelWithDebInfo>:${OPTIM_DEBUG_FLAGS}>"
+    PUBLIC "$<$<CONFIG:Release>:${RELEASE_FLAGS}>"
+)

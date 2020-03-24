@@ -8,9 +8,9 @@
 #include "glare/ui/ui_context.hpp"
 #include "glare/opengl/context.hpp"
 
-#include <imgui/imgui.h>
-#include <imgui/imgui_impl_opengl3.h>
-#include <imgui/imgui_impl_glfw.h>
+#include <imgui.h>
+#include <imgui_impl_opengl3.h>
+#include <imgui_impl_glfw.h>
 
 namespace imgui = ImGui;
 

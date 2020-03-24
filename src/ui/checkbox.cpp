@@ -7,7 +7,7 @@
 
 #include "glare/ui/checkbox.hpp"
 
-#include <imgui/imgui.h>
+#include <imgui.h>
 
 namespace imgui = ImGui;
 

@@ -8,7 +8,7 @@
 #include "glare/ui/widget/color_temp_picker.hpp"
 #include "glare/material/color_utils.hpp"
 
-#include <imgui/imgui.h>
+#include <imgui.h>
 #include <glm/vec3.hpp>
 
 namespace imgui = ImGui;

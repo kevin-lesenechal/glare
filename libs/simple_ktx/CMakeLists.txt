@@ -9,7 +9,9 @@ set(SOURCES
     src/ktx_image_writer.cpp
     include/simple_ktx.hpp)
 
-include_directories(include)
-
 add_library(simple_ktx ${SOURCES})
+
+target_include_directories(simple_ktx
+    PUBLIC include
+)
 target_link_libraries(simple_ktx gl_tables)

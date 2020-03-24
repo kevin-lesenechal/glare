@@ -9,7 +9,7 @@
 
 #include "glare/ui/debug_window.hpp"
 
-#include <imgui/imgui.h>
+#include <imgui.h>
 #include <GLFW/glfw3.h>
 #include <iostream>
 
