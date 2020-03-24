@@ -42,6 +42,7 @@ set(SOURCES
     include/glare/sizes.hpp
     include/glare/points.hpp
     include/glare/primitive/unit_cube.hpp
+    include/glare/skybox.hpp
     include/glare/logger_interface.hpp
     include/glare/abstract_logger.hpp
     include/glare/null_logger.hpp
@@ -71,6 +72,7 @@ set(SOURCES
     src/ui/widget/color_temp_picker.cpp
     src/material/color_utils.cpp
     src/primitive/unit_cube.cpp
+    src/skybox.cpp
 )
 
 set(TEST_SOURCES
