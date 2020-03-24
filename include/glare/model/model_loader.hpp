@@ -8,6 +8,7 @@
 #pragma once
 
 #include "model.hpp"
+#include "glare/null_logger.hpp"
 
 #include <assimp/Importer.hpp>
 #include <assimp/scene.h>
@@ -20,7 +21,8 @@ class ModelLoader
 {
 public:
     ModelLoader(Assimp::Importer& importer,
-                TextureLibraryInterface& texture_library);
+                TextureLibraryInterface& texture_library,
+                LoggerInterface& logger = null_logger);
 
     [[nodiscard]]
     Model load_from_file(const std::string& file_path);
@@ -36,6 +38,7 @@ private:
                            Material& material);
 
 private:
+    LoggerInterface& m_logger;
     Assimp::Importer& m_importer;
     TextureLibraryInterface& m_texture_library;
 };

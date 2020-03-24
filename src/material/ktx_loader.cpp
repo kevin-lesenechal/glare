@@ -12,7 +12,9 @@ namespace ktx = simple_ktx;
 
 namespace glare {
 
-KtxFileLoader::KtxFileLoader() = default;
+KtxFileLoader::KtxFileLoader(LoggerInterface& logger)
+  : m_logger(logger)
+{}
 
 Texture KtxFileLoader::load_texture(std::istream& input, int unit)
 {
@@ -114,6 +116,10 @@ Texture KtxFileLoader::load_texture(std::istream& input, int unit)
 
     if (header.nr_mipmap_levels == 0) {
         texture.generate_mipmap();
+        m_logger.notice(
+            "[KtxLoader] KTX file contained no mipmaps and were dynamically "
+            "generated"
+        );
     } else {
         texture.set_parameter(GL_TEXTURE_BASE_LEVEL, 0);
         texture.set_parameter(GL_TEXTURE_MAX_LEVEL,

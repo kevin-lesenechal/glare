@@ -10,6 +10,7 @@
 #include "texture.hpp"
 #include "glare/material/texture_library_interface.hpp"
 #include "glare/material/texture_loader.hpp"
+#include "glare/null_logger.hpp"
 
 #include <string>
 #include <unordered_map>
@@ -21,7 +22,8 @@ namespace glare {
 class TextureLibrary : public TextureLibraryInterface
 {
 public:
-    explicit TextureLibrary(TextureLoader& texture_loader);
+    explicit TextureLibrary(TextureLoader& texture_loader,
+                            LoggerInterface& logger = null_logger);
 
     void add_search_path(const std::filesystem::path& path);
 
@@ -33,6 +35,7 @@ public:
     std::filesystem::path resolve_texture_path(const std::string& name);
 
 private:
+    LoggerInterface& m_logger;
     TextureLoader& m_texture_loader;
     std::unordered_map<std::string, std::weak_ptr<Texture>> m_textures;
     std::vector<std::filesystem::path> m_search_paths;

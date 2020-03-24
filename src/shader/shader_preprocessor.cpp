@@ -12,8 +12,10 @@
 namespace glare {
 
 ShaderPreprocessor::ShaderPreprocessor(
-    ShaderSourceLoaderInterface& source_loader)
-  : m_source_loader(source_loader)
+    ShaderSourceLoaderInterface& source_loader,
+    LoggerInterface& logger)
+  : m_logger(logger),
+    m_source_loader(source_loader)
 {}
 
 std::string ShaderPreprocessor::preprocess(const std::string& source)

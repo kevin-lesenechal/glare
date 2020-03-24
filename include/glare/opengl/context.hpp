@@ -7,6 +7,8 @@
 
 #pragma once
 
+#include "glare/null_logger.hpp"
+
 #include <GLFW/glfw3.h>
 
 #include <string>
@@ -21,7 +23,8 @@ public:
             unsigned window_height,
             const std::string& window_title,
             bool debug = false,
-            const std::function<void()>& pre_init = std::function<void()>());
+            const std::function<void()>& pre_init = std::function<void()>(),
+            LoggerInterface& logger = null_logger);
 
     ~Context() noexcept;
 
@@ -35,6 +38,7 @@ public:
     std::function<void(unsigned new_width, unsigned new_height)> on_window_resized;
 
 protected:
+    LoggerInterface& m_logger;
     GLFWwindow* m_window;
 
 private:

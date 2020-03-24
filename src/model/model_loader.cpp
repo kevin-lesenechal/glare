@@ -14,13 +14,18 @@
 namespace glare {
 
 ModelLoader::ModelLoader(Assimp::Importer& importer,
-                         TextureLibraryInterface& texture_library)
-  : m_importer(importer),
+                         TextureLibraryInterface& texture_library,
+                         LoggerInterface& logger)
+  : m_logger(logger),
+    m_importer(importer),
     m_texture_library(texture_library)
 {}
 
 Model ModelLoader::load_from_file(const std::string& file_path)
 {
+    m_logger.info("[ModelLoader] Loading model from file \"%s\"",
+                  file_path.c_str());
+
     const aiScene* scene = m_importer.ReadFile(
         file_path,
         aiProcess_Triangulate

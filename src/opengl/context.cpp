@@ -82,12 +82,16 @@ Context::Context(unsigned window_width,
                  unsigned window_height,
                  const std::string& window_title,
                  bool debug,
-                 const std::function<void()>& pre_init)
-  : m_window(nullptr)
+                 const std::function<void()>& pre_init,
+                 LoggerInterface& logger)
+  : m_logger(logger),
+    m_window(nullptr)
 {
     if (!glfwInit()) {
         throw 42; // FIXME: proper exception
     }
+
+    m_logger.debug("[Context] GLFW initialized");
 
     glfwSetErrorCallback(&on_glfw_error);
 
@@ -98,8 +102,11 @@ Context::Context(unsigned window_width,
     glfwWindowHint(GLFW_DOUBLEBUFFER, GL_TRUE);
 
     if (pre_init) {
+        m_logger.debug("[Context] Executing user pre-initialization...");
         pre_init();
     }
+
+    m_logger.debug("[Context] Creating OpenGL context...");
 
     if ((m_window = glfwCreateWindow(
             static_cast<int>(window_width), static_cast<int>(window_height),
@@ -110,6 +117,11 @@ Context::Context(unsigned window_width,
     }
 
     make_current();
+
+    m_logger.info("[Context] OpenGL %s, %s",
+                  glGetString(GL_VERSION), glGetString(GL_RENDERER));
+    m_logger.info("[Context] GLSL %s",
+                  glGetString(GL_SHADING_LANGUAGE_VERSION));
 
     if (debug) {
         glfwWindowHint(GLFW_OPENGL_DEBUG_CONTEXT, GL_TRUE);
@@ -123,6 +135,12 @@ Context::Context(unsigned window_width,
     }
 
     query_extensions();
+
+    if (!ext::has_dsa) {
+        m_logger.notice(
+            "[Context] OpenGL context doesn't support Direct State Access"
+        );
+    }
 
     glfwSetWindowUserPointer(m_window, this);
     glfwSetWindowSizeCallback(m_window, &on_glfw_window_resize);

@@ -7,6 +7,8 @@
 
 #pragma once
 
+#include "glare/null_logger.hpp"
+
 #include <string>
 #include <map>
 
@@ -17,7 +19,8 @@ class ShaderSourceLoaderInterface;
 class ShaderPreprocessor
 {
 public:
-    explicit ShaderPreprocessor(ShaderSourceLoaderInterface& source_loader);
+    explicit ShaderPreprocessor(ShaderSourceLoaderInterface& source_loader,
+                                LoggerInterface& logger = null_logger);
 
     std::string preprocess(const std::string& source);
 
@@ -25,6 +28,7 @@ public:
     void undefine(const std::string& key);
 
 private:
+    LoggerInterface& m_logger;
     ShaderSourceLoaderInterface& m_source_loader;
     std::map<std::string, std::string> m_defines;
 };

@@ -41,6 +41,9 @@ set(SOURCES
     include/glare/opengl/extensions.hpp
     include/glare/sizes.hpp
     include/glare/points.hpp
+    include/glare/logger_interface.hpp
+    include/glare/abstract_logger.hpp
+    include/glare/null_logger.hpp
 
     src/shader/shader_program.cpp
     src/shader/shader.cpp

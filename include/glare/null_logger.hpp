@@ -7,26 +7,17 @@
 
 #pragma once
 
-#include <istream>
-#include <simple_ktx.hpp>
-
-#include "glare/material/texture.hpp"
-#include "glare/null_logger.hpp"
+#include "abstract_logger.hpp"
 
 namespace glare {
 
-class KtxFileLoader
+class NullLogger : public AbstractLogger
 {
 public:
-    explicit KtxFileLoader(LoggerInterface& logger = null_logger);
-
-    Texture load_texture(std::istream& input, int unit = 0);
-
-private:
-    Texture::Type texture_type(const simple_ktx::KtxFileHeader& ktx_header);
-
-private:
-    LoggerInterface& m_logger;
+    void log(Severity, const char*, std::va_list) const override
+    {}
 };
+
+inline NullLogger null_logger;
 
 } // ns glare
