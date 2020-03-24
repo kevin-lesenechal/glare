@@ -41,6 +41,7 @@ set(SOURCES
     include/glare/opengl/extensions.hpp
     include/glare/sizes.hpp
     include/glare/points.hpp
+    include/glare/primitive/unit_cube.hpp
     include/glare/logger_interface.hpp
     include/glare/abstract_logger.hpp
     include/glare/null_logger.hpp
@@ -68,7 +69,9 @@ set(SOURCES
     src/shader/phong_shading.cpp
     src/material/ktx_loader.cpp
     src/ui/widget/color_temp_picker.cpp
-    src/material/color_utils.cpp)
+    src/material/color_utils.cpp
+    src/primitive/unit_cube.cpp
+)
 
 set(TEST_SOURCES
     tests/shader/shader_preprocessor_test.cpp)
