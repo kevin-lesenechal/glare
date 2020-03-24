@@ -1,0 +1,22 @@
+body, table, div, p, dl, p.definition, table.directory {
+    font-size: 20px;
+}
+
+.memItemLeft, .memItemRight {
+    font-family: Hack, monospace;
+    padding-top: 6px;
+    padding-bottom: 6px;
+}
+
+.mdescRight {
+    padding-bottom: 6px;
+}
+
+.memtitle, .memname, .paramname, table.directory .entry {
+    font-family: Hack, monospace;
+}
+
+.line *, line, div.line {
+    font-family: Hack, monospace;
+    font-size: 16px;
+}
