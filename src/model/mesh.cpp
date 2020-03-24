@@ -20,7 +20,7 @@ Mesh::Mesh(const std::vector<VertexAttr>& vertices,
     m_material(std::move(material))
 {
     if (!m_material) {
-        throw 42; // FIXME: proper exception
+        throw std::logic_error("Mesh: Null pointer for material");
     }
 
     unsigned values_per_vert = 3 + 3 + 2 + 3 + 3;

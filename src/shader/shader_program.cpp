@@ -17,7 +17,9 @@ namespace glare {
 ShaderProgram::ShaderProgram()
 {
     if ((m_id = glCreateProgram()) == 0) {
-        throw 42; // TODO: proper OpenGL exception
+        throw std::runtime_error(
+            "Couldn't create shader program: glCreateProgram() error"
+        );
     }
 }
 
@@ -50,7 +52,9 @@ void ShaderProgram::link()
         char msg[512];
         glGetProgramInfoLog(m_id, sizeof msg, nullptr, msg);
 
-        throw std::runtime_error("GLSL link error: " + std::string(msg));
+        throw std::runtime_error(
+            "Couldn't link shader program: " + std::string(msg)
+        );
     }
 }
 

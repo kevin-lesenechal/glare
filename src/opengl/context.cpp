@@ -14,9 +14,11 @@
 
 namespace glare {
 
-static void on_glfw_error(int, const char*)
+static void on_glfw_error(int errc, const char* errmsg)
 {
-    throw 42; // FIXME: proper exception
+    throw std::runtime_error(
+        "GLFW error: [" + std::to_string(errc) + "] " + errmsg
+    );
 }
 
 static void on_gl_error(GLenum source, GLenum type, GLuint id, GLenum severity,
@@ -88,7 +90,7 @@ Context::Context(unsigned window_width,
     m_window(nullptr)
 {
     if (!glfwInit()) {
-        throw 42; // FIXME: proper exception
+        throw std::runtime_error("Couldn't initialize GLFW");
     }
 
     m_logger.debug("[Context] GLFW initialized");
@@ -113,7 +115,7 @@ Context::Context(unsigned window_width,
             window_title.c_str(),
             nullptr, nullptr
         )) == nullptr) {
-        throw 42; // FIXME: proper exception
+        throw std::runtime_error("GLFW: Couldn't create the OpenGL context");
     }
 
     make_current();

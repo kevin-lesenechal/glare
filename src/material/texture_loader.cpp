@@ -8,6 +8,7 @@
 #include "glare/material/texture_loader.hpp"
 #include "glare/material/texture.hpp"
 #include "glare/material/ktx_loader.hpp"
+#include "glare/opengl/extensions.hpp"
 
 #include <epoxy/gl.h>
 #include <stb_image.h>
@@ -71,7 +72,10 @@ void TextureLoader::load_into(const std::filesystem::path& file_path,
     );
 
     if (tex_data == nullptr) {
-        throw 42; // FIXME: proper exception
+        throw std::runtime_error(
+            "Couldn't load texture image '" + file_path.string()
+            + "': stbi_load() error"
+        );
     }
 
     // FIXME: set proper source format (RGB / RGBA)

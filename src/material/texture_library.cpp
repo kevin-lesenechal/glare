@@ -35,7 +35,11 @@ std::shared_ptr<Texture> TextureLibrary::get_texture(
     if (it != m_textures.end()) {
         if (std::shared_ptr<Texture> texture = it->second.lock()) {
             if (texture->unit() != unit) {
-                throw 42;
+                throw std::runtime_error(
+                    "Requested texture \"" + name + "\" with unit "
+                    + std::to_string(unit) + ", which already exists with unit "
+                    + std::to_string(texture->unit())
+                );
             }
 
             m_logger.debug("[TextureLibrary] Already loaded");
@@ -61,14 +65,18 @@ fs::path TextureLibrary::resolve_texture_path(const std::string& name)
 
         if (fs::exists(tex_path)) {
             if (!fs::is_regular_file(tex_path)) {
-                throw 42;
+                throw std::runtime_error(
+                    "Texture \"" + tex_path.string() + "\" is not a regular file"
+                );
             }
 
             return tex_path;
         }
     }
 
-    throw 42;
+    throw std::runtime_error(
+        "TextureLibrary: couldn't find any texture file for \"" + name + "\""
+    );
 }
 
 } // ns glare

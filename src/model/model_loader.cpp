@@ -36,7 +36,10 @@ Model ModelLoader::load_from_file(const std::string& file_path)
     if (scene == nullptr
         || scene->mFlags & AI_SCENE_FLAGS_INCOMPLETE
         || scene->mRootNode == nullptr) {
-        throw 42; // FIXME: proper exception
+        throw std::runtime_error(
+            "Couldn't load model: Assimp error: "
+            + std::string(m_importer.GetErrorString())
+        );
     }
 
     Model model;

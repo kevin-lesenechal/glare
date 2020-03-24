@@ -9,6 +9,16 @@
 
 namespace glare {
 
+Shader::Shader(Shader::Type type)
+    : m_type(type)
+{
+    if ((m_id = glCreateShader(static_cast<GLenum>(m_type))) == 0) {
+        throw std::runtime_error(
+            "Couldn't create shader: glCreateShader() error"
+        );
+    }
+}
+
 Shader::Shader(Shader&& other) noexcept
     : m_type(other.m_type),
       m_id(other.m_id)
@@ -52,7 +62,9 @@ void Shader::compile()
         char msg[512];
         glGetShaderInfoLog(m_id, sizeof msg, nullptr, msg);
 
-        throw std::runtime_error("GLSL error: " + std::string(msg));
+        throw std::runtime_error(
+            "Couldn't compile shader: " + std::string(msg)
+        );
     }
 }
 
@@ -60,6 +72,7 @@ Shader Shader::from_source_file(Shader::Type type,
                                 const std::string& source_file)
 {
     std::ifstream file(source_file);
+    file.exceptions(std::ios::failbit);
 
     if (!file) {
         throw std::runtime_error("Couldn't open file '" + source_file + "'");
@@ -73,14 +86,6 @@ Shader Shader::from_source_file(Shader::Type type,
     shader.compile();
 
     return shader;
-}
-
-Shader::Shader(Shader::Type type)
-  : m_type(type)
-{
-    if ((m_id = glCreateShader(static_cast<GLenum>(m_type))) == 0) {
-        throw 42; // TODO: proper OpenGL exception
-    }
 }
 
 } // ns glare

@@ -66,7 +66,7 @@ void Texture::set_image(GLenum target,
                         const uint8_t* data)
 {
     if (m_immutable) {
-        throw std::runtime_error("Cannot set image on an immutable texture");
+        throw std::logic_error("Cannot set image on an immutable texture");
     }
 
     bind();
@@ -144,7 +144,7 @@ void Texture::set_compressed_image(GLenum target,
                                    size_t size)
 {
     if (m_immutable) {
-        throw std::runtime_error(
+        throw std::logic_error(
             "Cannot set compressed image on an immutable texture"
         );
     }
