@@ -18,8 +18,8 @@ class ShaderProgram;
 struct Material
 {
     std::shared_ptr<Texture> texture;
-    std::shared_ptr<Texture> specular_map;
-    std::shared_ptr<Texture> normal_map;
+    std::shared_ptr<Texture> specular_map = {};
+    std::shared_ptr<Texture> normal_map = {};
     glm::vec3 ambient_color = glm::vec3(0.1f, 0.1f, 0.1f);
     glm::vec3 diffuse_color = glm::vec3(0.5f, 0.5f, 0.5f);
     glm::vec3 specular_color = glm::vec3(1.0f, 1.0f, 1.0f);
