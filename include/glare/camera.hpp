@@ -19,6 +19,7 @@ public:
 
     void update_view_matrix();
     void update_projection_matrix();
+    void update_front_from_angles();
 
     [[nodiscard]] const glm::mat4& view_matrix() const noexcept
     { return m_view_mx; }
@@ -29,6 +30,7 @@ public:
 public:
     glm::vec3 position;
     glm::vec3 front;
+    glm::vec3 up = {0.0f, 0.0f, 1.0f};
     float     pitch;
     float     yaw;
     float     fov;

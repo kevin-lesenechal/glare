@@ -18,7 +18,7 @@ set(SOURCES
     include/glare/shader/shader_preprocessor.hpp
     include/glare/shader/shader_source_loader_interface.hpp
     include/glare/shader/fs_shader_source_loader.hpp
-    include/glare/fps_camera.hpp
+    include/glare/freefly_camera_controller.hpp
     include/glare/ui/debug_window.hpp
     include/glare/ui/checkbox.hpp
     include/glare/ui/ui_context.hpp
@@ -58,7 +58,7 @@ set(SOURCES
     src/primitive/axis.cpp
     src/shader/shader_preprocessor.cpp
     src/shader/fs_shader_source_loader.cpp
-    src/fps_camera.cpp
+    src/freefly_camera_controller.cpp
     src/ui/debug_window.cpp
     src/ui/checkbox.cpp
     src/ui/ui_context.cpp

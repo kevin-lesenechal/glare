@@ -29,7 +29,7 @@ void Camera::update_view_matrix()
 {
     m_view_mx = glm::lookAt(
         this->position,
-        glm::vec3(0.0f, 0.0f, 0.0f),
+        this->position + this->front,
         glm::vec3(0.0f, 0.0f, 1.0f)
     );
 }
@@ -42,6 +42,15 @@ void Camera::update_projection_matrix()
         this->z_near,
         this->z_far
     );
+}
+
+void Camera::update_front_from_angles()
+{
+    front = glm::normalize(glm::vec3(
+        std::cos(glm::radians(yaw)) * std::cos(glm::radians(pitch)),
+        std::sin(glm::radians(yaw)) * std::cos(glm::radians(pitch)),
+        std::sin(glm::radians(pitch))
+    ));
 }
 
 } // ns glare
