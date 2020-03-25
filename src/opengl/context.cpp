@@ -12,6 +12,8 @@
 
 #include <csignal>
 
+namespace sig2 = boost::signals2;
+
 namespace glare {
 
 static void on_glfw_error(int errc, const char* errmsg)
@@ -146,6 +148,10 @@ Context::Context(unsigned window_width,
 
     glfwSetWindowUserPointer(m_window, this);
     glfwSetWindowSizeCallback(m_window, &on_glfw_window_resize);
+    glfwSetKeyCallback(m_window, &on_glfw_key_event);
+    glfwSetCursorPosCallback(m_window, &on_glfw_mouse_move);
+    glfwSetScrollCallback(m_window, &on_glfw_mouse_scroll);
+    glfwSetMouseButtonCallback(m_window, &on_glfw_mouse_button);
 }
 
 Context::~Context() noexcept
@@ -168,6 +174,24 @@ void Context::swap_buffers()
     glfwSwapBuffers(m_window);
 }
 
+void Context::grab_cursor()
+{
+    glfwSetInputMode(m_window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+
+    if (glfwRawMouseMotionSupported()) {
+        glfwSetInputMode(m_window, GLFW_RAW_MOUSE_MOTION, GLFW_TRUE);
+    }
+}
+
+void Context::release_cursor()
+{
+    glfwSetInputMode(m_window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
+
+    if (glfwRawMouseMotionSupported()) {
+        glfwSetInputMode(m_window, GLFW_RAW_MOUSE_MOTION, GLFW_FALSE);
+    }
+}
+
 void Context::query_extensions()
 {
 #define TEST(var, name) ext::var = epoxy_has_gl_extension("GL_" #name)
@@ -177,6 +201,86 @@ void Context::query_extensions()
     TEST(has_anisotropic_filter, ARB_texture_filter_anisotropic); // GL 4.6
 
 #undef TEST
+}
+
+sig2::connection Context::connect_keyboard_event(
+    const KeyboardSignal::slot_type& slot)
+{
+    return m_keyboard_sigal.connect(slot);
+}
+
+sig2::connection Context::connect_mouse_move_event(
+    const MouseMoveSignal::slot_type& slot)
+{
+    return m_mouse_move_signal.connect(slot);
+}
+
+sig2::connection Context::connect_mouse_scroll_event(
+    const MouseScrollSignal::slot_type& slot)
+{
+    return m_mouse_scroll_signal.connect(slot);
+}
+
+sig2::connection Context::connect_mouse_button_event(
+    const MouseButtonSignal::slot_type& slot)
+{
+    return m_mouse_button_signal.connect(slot);
+}
+
+void Context::on_glfw_key_event(GLFWwindow* window,
+                                int key,
+                                int scancode,
+                                int action,
+                                int)
+{
+    if (action == GLFW_REPEAT) {
+        return;
+    }
+
+    Context& context = *reinterpret_cast<Context*>(
+        glfwGetWindowUserPointer(window)
+    );
+
+    KeyboardEvent event;
+    event.action = action == GLFW_PRESS ? KeyboardEvent::Action::Down
+                                        : KeyboardEvent::Action::Up;
+    event.key = static_cast<KeyboardEvent::Key>(key);
+    event.scancode = scancode;
+
+    context.m_keyboard_sigal(event);
+}
+
+void Context::on_glfw_mouse_move(GLFWwindow* window, double x, double y)
+{
+    Context& context = *reinterpret_cast<Context*>(
+        glfwGetWindowUserPointer(window)
+    );
+    context.m_mouse_move_signal(MouseMoveEvent{x, y});
+}
+
+void Context::on_glfw_mouse_scroll(GLFWwindow* window, double x, double y)
+{
+    Context& context = *reinterpret_cast<Context*>(
+        glfwGetWindowUserPointer(window)
+    );
+    context.m_mouse_scroll_signal(MouseScrollEvent{x, y});
+}
+
+void Context::on_glfw_mouse_button(GLFWwindow* window,
+                                   int button,
+                                   int action,
+                                   int)
+{
+    Context& context = *reinterpret_cast<Context*>(
+        glfwGetWindowUserPointer(window)
+    );
+
+    MouseButtonEvent event;
+    event.action = action == GLFW_PRESS ? MouseButtonEvent::Action::Down
+                                        : MouseButtonEvent::Action::Up;
+    event.button = static_cast<MouseButtonEvent::Button>(button);
+
+    context.m_mouse_button_signal(event);
 }
 
 } // ns glare

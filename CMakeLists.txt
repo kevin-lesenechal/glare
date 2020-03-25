@@ -46,6 +46,10 @@ set(SOURCES
     include/glare/logger_interface.hpp
     include/glare/abstract_logger.hpp
     include/glare/null_logger.hpp
+    include/glare/input/keyboard_event.hpp
+    include/glare/input/mouse_move_event.hpp
+    include/glare/input/mouse_scroll_event.hpp
+    include/glare/input/mouse_button_event.hpp
 
     src/shader/shader_program.cpp
     src/shader/shader.cpp
