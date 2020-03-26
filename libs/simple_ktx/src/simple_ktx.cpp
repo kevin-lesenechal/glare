@@ -100,9 +100,6 @@ void write_ktx_header(std::ostream& output, KtxFile& file)
     }
 
     file.header.key_value_bytes = kv_total_size;
-    file.block_format = gl_tables::format_block_size(
-        file.header.gl_internal_format
-    );
 
     auto except = output.exceptions();
     output.exceptions(std::ios::failbit);
