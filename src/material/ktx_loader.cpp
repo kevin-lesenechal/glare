@@ -59,7 +59,8 @@ Texture KtxFileLoader::load_texture(std::istream& input, int unit)
             image.px_height,
             image.z_slice,
             image.array_index,
-            image.face_index
+            image.face_index,
+            ext::has_tex_storage
         );
 
         AnyPoint offset = Point3D(0, 0, 0);
@@ -67,7 +68,6 @@ Texture KtxFileLoader::load_texture(std::istream& input, int unit)
         GLenum tex_target = static_cast<GLenum>(texture.type());
         if (texture.type() == Texture::Type::CubeMap) {
             tex_target = GL_TEXTURE_CUBE_MAP_POSITIVE_X + image.face_index;
-            image_size.size_3d.depth = 1;
             offset.point_3d.z = image.face_index;
         }
 

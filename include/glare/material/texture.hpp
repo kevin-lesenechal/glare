@@ -118,7 +118,8 @@ public:
                                    unsigned height,
                                    unsigned depth,
                                    unsigned array_layer,
-                                   unsigned face_index);
+                                   unsigned face_index,
+                                   bool for_tex_storage = false);
 
 private:
     int    m_unit;

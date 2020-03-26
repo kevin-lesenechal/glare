@@ -555,7 +555,8 @@ AnySize Texture::index_param_for(Texture::Type type,
                                  unsigned height,
                                  unsigned depth,
                                  unsigned array_layer,
-                                 unsigned face_index)
+                                 unsigned face_index,
+                                 bool for_tex_storage)
 {
     switch (type) {
     case Texture::Type::Texture1D:
@@ -566,7 +567,8 @@ AnySize Texture::index_param_for(Texture::Type type,
         return Size2D(width, height);
 
     case Texture::Type::CubeMap:
-        return Size3D(width, height, face_index);
+        return for_tex_storage ? AnySize(Size3D(width, height, 1))
+                               : AnySize(Size2D(width, height));
 
     case Texture::Type::Texture1DArray:
         return Size2D(width, array_layer);
