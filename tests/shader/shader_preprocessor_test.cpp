@@ -3,6 +3,9 @@
 
 #include <gmock/gmock.h>
 #include <gtest/gtest.h>
+#include <glm/vec3.hpp>
+
+using namespace glare;
 
 namespace {
 
@@ -17,9 +20,12 @@ TEST(shader_preprocessor, defines)
     FsShaderSourceLoader loader;
     ShaderPreprocessor proc(loader);
 
-    proc.define("FOO", "42");
-    proc.define("BAR", "vec3(1.0f)");
-    proc.define("REMOVE_ME", "true");
+    proc.define("FOO", 42);
+    proc.define("BAR", glm::vec3(1.0f, 2.0f, 3.0f));
+    proc.define("BAZ", false);
+    proc.define("M_PI", 3.14159265358979);
+    proc.define("NO_VALUE");
+    proc.define("REMOVE_ME", true);
     proc.undefine("REMOVE_ME");
 
     std::string res = proc.preprocess(R"GLSL(#version 330 core
@@ -30,8 +36,11 @@ void main() {
 )GLSL");
 
     EXPECT_EQ(R"GLSL(#version 330 core
-#define BAR vec3(1.0f)
+#define BAR vec3(1.0f, 2.0f, 3.0f)
+#define BAZ false
 #define FOO 42
+#define M_PI 3.14159265358979
+#define NO_VALUE
 #line 2
 
 void main() {

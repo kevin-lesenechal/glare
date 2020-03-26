@@ -45,10 +45,17 @@ std::string ShaderPreprocessor::preprocess(const std::string& source)
             }
 
             for (const auto& pair : m_defines) {
-                output += "#define " + pair.first + " " + pair.second + "\n";
+                if (pair.second.empty()) {
+                    output += "#define " + pair.first + "\n";
+                } else {
+                    output +=
+                        "#define " + pair.first + " " + pair.second + "\n";
+                }
             }
 
-            output += "#line " + std::to_string(line_no + 1) + "\n";
+            if (!m_defines.empty()) {
+                output += "#line " + std::to_string(line_no + 1) + "\n";
+            }
             version_found = true;
         }
     }
@@ -60,10 +67,15 @@ std::string ShaderPreprocessor::preprocess(const std::string& source)
     return output;
 }
 
-void ShaderPreprocessor::define(const std::string& key,
-                                const std::string& value)
+void ShaderPreprocessor::define(const std::string& key)
 {
-    m_defines[key] = value;
+    define_expr(key, "");
+}
+
+void ShaderPreprocessor::define_expr(const std::string& key,
+                                     const std::string& expr)
+{
+    m_defines[key] = expr;
 }
 
 void ShaderPreprocessor::undefine(const std::string& key)
