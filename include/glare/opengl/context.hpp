@@ -90,6 +90,14 @@ private:
                                      int action,
                                      int mods);
 
+    static void on_gl_error(GLenum source,
+                            GLenum type,
+                            GLuint id,
+                            GLenum severity,
+                            GLsizei,
+                            const GLchar* message,
+                            const void* priv);
+
 private:
     KeyboardSignal      m_keyboard_sigal;
     MouseMoveSignal     m_mouse_move_signal;

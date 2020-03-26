@@ -23,55 +23,6 @@ static void on_glfw_error(int errc, const char* errmsg)
     );
 }
 
-static void on_gl_error(GLenum source, GLenum type, GLuint id, GLenum severity,
-                        GLsizei, const GLchar* message, const void*)
-{
-    const char* src_str;
-    const char* type_str;
-    const char* sev_str;
-
-    switch (source) {
-        case GL_DEBUG_SOURCE_API: src_str = "API"; break;
-        case GL_DEBUG_SOURCE_WINDOW_SYSTEM: src_str = "Window System"; break;
-        case GL_DEBUG_SOURCE_SHADER_COMPILER: src_str = "Shader Compiler"; break;
-        case GL_DEBUG_SOURCE_THIRD_PARTY: src_str = "Third Party"; break;
-        case GL_DEBUG_SOURCE_APPLICATION: src_str = "Application"; break;
-        case GL_DEBUG_SOURCE_OTHER: src_str = "Other"; break;
-        default: src_str = "Unknown source";
-    }
-
-    switch (type) {
-        case GL_DEBUG_TYPE_ERROR: type_str = "Error"; break;
-        case GL_DEBUG_TYPE_DEPRECATED_BEHAVIOR: type_str = "Deprecated Behaviour"; break;
-        case GL_DEBUG_TYPE_UNDEFINED_BEHAVIOR: type_str = "Undefined Behaviour"; break;
-        case GL_DEBUG_TYPE_PORTABILITY: type_str = "Portability"; break;
-        case GL_DEBUG_TYPE_PERFORMANCE: type_str = "Performance"; break;
-        case GL_DEBUG_TYPE_MARKER: type_str = "Marker"; break;
-        case GL_DEBUG_TYPE_PUSH_GROUP: type_str = "Push Group"; break;
-        case GL_DEBUG_TYPE_POP_GROUP: type_str = "Pop Group"; break;
-        case GL_DEBUG_TYPE_OTHER: type_str = "Other"; break;
-        default: type_str = "Unknown type";
-    }
-
-    switch (severity) {
-        case GL_DEBUG_SEVERITY_HIGH: sev_str = "error"; break;
-        case GL_DEBUG_SEVERITY_MEDIUM: sev_str = "warning"; break;
-        case GL_DEBUG_SEVERITY_LOW: sev_str = "notice"; break;
-        case GL_DEBUG_SEVERITY_NOTIFICATION: sev_str = "info"; break;
-        default: sev_str = "unknown severity";
-    }
-
-    fprintf(
-        stderr,
-        "OpenGL [%s/%s] %s: %s (id=%u)\n",
-        src_str, type_str, sev_str, message, id
-    );
-
-    if (severity == GL_DEBUG_SEVERITY_HIGH) {
-        raise(SIGTRAP);
-    }
-}
-
 static void on_glfw_window_resize(GLFWwindow* window, int width, int height)
 {
     Context& context = *reinterpret_cast<Context*>(
@@ -129,7 +80,7 @@ Context::Context(unsigned window_width,
 
     if (debug) {
         glfwWindowHint(GLFW_OPENGL_DEBUG_CONTEXT, GL_TRUE);
-        glDebugMessageCallback(&on_gl_error, nullptr);
+        glDebugMessageCallback(&on_gl_error, this);
         glDebugMessageControl(GL_DONT_CARE, GL_DONT_CARE,
                               GL_DEBUG_SEVERITY_NOTIFICATION,
                               0, nullptr, GL_FALSE);
@@ -281,6 +232,66 @@ void Context::on_glfw_mouse_button(GLFWwindow* window,
     event.button = static_cast<MouseButtonEvent::Button>(button);
 
     context.m_mouse_button_signal(event);
+}
+
+void Context::on_gl_error(GLenum source,
+                          GLenum type,
+                          GLuint,
+                          GLenum severity,
+                          GLsizei,
+                          const GLchar* message,
+                          const void* priv)
+{
+    const char* src_str;
+    const char* type_str;
+
+    switch (source) {
+    case GL_DEBUG_SOURCE_API: src_str = "API"; break;
+    case GL_DEBUG_SOURCE_WINDOW_SYSTEM: src_str = "Window System"; break;
+    case GL_DEBUG_SOURCE_SHADER_COMPILER: src_str = "Shader Compiler"; break;
+    case GL_DEBUG_SOURCE_THIRD_PARTY: src_str = "Third Party"; break;
+    case GL_DEBUG_SOURCE_APPLICATION: src_str = "Application"; break;
+    case GL_DEBUG_SOURCE_OTHER: src_str = "Other"; break;
+    default: src_str = "Unknown source";
+    }
+
+    switch (type) {
+    case GL_DEBUG_TYPE_ERROR: type_str = "Error"; break;
+    case GL_DEBUG_TYPE_DEPRECATED_BEHAVIOR: type_str = "Deprecated Behaviour"; break;
+    case GL_DEBUG_TYPE_UNDEFINED_BEHAVIOR: type_str = "Undefined Behaviour"; break;
+    case GL_DEBUG_TYPE_PORTABILITY: type_str = "Portability"; break;
+    case GL_DEBUG_TYPE_PERFORMANCE: type_str = "Performance"; break;
+    case GL_DEBUG_TYPE_MARKER: type_str = "Marker"; break;
+    case GL_DEBUG_TYPE_PUSH_GROUP: type_str = "Push Group"; break;
+    case GL_DEBUG_TYPE_POP_GROUP: type_str = "Pop Group"; break;
+    case GL_DEBUG_TYPE_OTHER: type_str = "Other"; break;
+    default: type_str = "Unknown type";
+    }
+
+    // We know for sure the source object is not actually const
+    Context& context = *reinterpret_cast<Context*>(const_cast<void*>(priv));
+
+    switch (severity) {
+    case GL_DEBUG_SEVERITY_HIGH:
+        context.m_logger.error("[OpenGL] %s/%s: %s", src_str, type_str, message);
+        break;
+
+    case GL_DEBUG_SEVERITY_MEDIUM:
+        context.m_logger.warning("[OpenGL] %s/%s: %s", src_str, type_str, message);
+        break;
+
+    case GL_DEBUG_SEVERITY_LOW:
+        context.m_logger.notice("[OpenGL] %s/%s: %s", src_str, type_str, message);
+        break;
+
+    default:
+        context.m_logger.info("[OpenGL] %s/%s: %s", src_str, type_str, message);
+        break;
+    }
+
+    if (severity == GL_DEBUG_SEVERITY_HIGH) {
+        raise(SIGTRAP);
+    }
 }
 
 } // ns glare
