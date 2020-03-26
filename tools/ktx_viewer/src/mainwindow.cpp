@@ -46,13 +46,38 @@ MainWindow::MainWindow(const std::string& filename,
     }
     this->internal_format->setFont(monospace);
 
+    std::string base_format_name = gl_tables::format_name(
+        m_header.gl_base_internal_format
+    );
     this->base_internal_format->setText(
-        "0x" + QString::number(m_header.gl_base_internal_format, 16)
+        QString("%1 [0x%2]")
+            .arg(base_format_name.c_str())
+            .arg(QString::number(m_header.gl_base_internal_format, 16))
+    );
+
+    GLenum base_format = gl_tables::base_format_for_internal(
+        m_header.gl_internal_format
     );
 
     if (compressed) {
-        this->data_format->setText("(" + tr("compressed") + ")");
-        this->data_type->setText("(" + tr("compressed") + ")");
+        this->data_format->setText("n/a (" + tr("compressed") + ")");
+        this->data_type->setText("n/a (" + tr("compressed") + ")");
+    } else {
+        std::string format = gl_tables::format_name(m_header.gl_format);
+        this->data_format->setText(
+            QString("%1 [0x%2]")
+            .arg(format.c_str())
+            .arg(QString::number(m_header.gl_format, 16))
+        );
+        this->data_format->setFont(monospace);
+
+        std::string type = gl_tables::type_name(m_header.gl_type);
+        this->data_type->setText(
+            QString("%1 [0x%2]")
+                .arg(type.c_str())
+                .arg(QString::number(m_header.gl_type, 16))
+        );
+        this->data_type->setFont(monospace);
     }
 
     this->key_values->setFont(monospace);
@@ -70,6 +95,7 @@ MainWindow::MainWindow(const std::string& filename,
     this->array_index->setEnabled(m_header.nr_array_elements > 0);
     this->face_index->setEnabled(m_header.nr_faces > 1);
     this->z_slice->setEnabled(m_header.pixel_depth > 0);
+    this->alpha_mode->setEnabled(base_format == GL_RGBA);
 
     if (m_header.nr_mipmap_levels > 0) {
         this->mipmap_level->setRange(0, m_header.nr_mipmap_levels - 1);
@@ -98,6 +124,8 @@ MainWindow::MainWindow(const std::string& filename,
             this, &MainWindow::change_image);
     connect(this->z_slice, qOverload<int>(&QSpinBox::valueChanged),
             this, &MainWindow::change_image);
+    connect(this->alpha_mode, qOverload<int>(&QComboBox::currentIndexChanged),
+            this, &MainWindow::change_image);
 
     QTimer::singleShot(0, this, &MainWindow::change_image);
 }
@@ -109,5 +137,8 @@ void MainWindow::change_image()
     unsigned face = this->face_index->value();
     unsigned z_slice = this->z_slice->value();
 
+    this->view->set_alpha_mode(
+        static_cast<TextureRenderer::AlphaMode>(this->alpha_mode->currentIndex())
+    );
     this->view->change_image(m_ktx, mipmap, array_index, face, z_slice);
 }

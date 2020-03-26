@@ -8,6 +8,12 @@ class TextureRenderer : public QOpenGLWidget
 {
     Q_OBJECT
 public:
+    enum AlphaMode {
+        Discard = 0,
+        Display = 1,
+        DisplayAlone = 2
+    };
+
     explicit TextureRenderer(QWidget* parent = nullptr);
 
     ~TextureRenderer() override;
@@ -17,6 +23,8 @@ public:
                       unsigned face, unsigned z_slice);
 
     void set_input(std::istream* input);
+    void set_alpha_mode(AlphaMode alpha_mode)
+    { m_alpha_mode = alpha_mode; }
 
 protected:
     void initializeGL() override;
@@ -28,6 +36,8 @@ private:
 
 private:
     GLuint m_tex_id;
+    GLuint m_bg_tex;
     const simple_ktx::KtxFile* m_ktx;
     std::istream* m_input;
+    AlphaMode m_alpha_mode;
 };
