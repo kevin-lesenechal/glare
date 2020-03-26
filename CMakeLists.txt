@@ -46,6 +46,7 @@ set(SOURCES
     include/glare/logger_interface.hpp
     include/glare/abstract_logger.hpp
     include/glare/null_logger.hpp
+    include/glare/shader/glsl_types.hpp
     include/glare/input/keyboard_event.hpp
     include/glare/input/mouse_move_event.hpp
     include/glare/input/mouse_scroll_event.hpp
@@ -77,6 +78,7 @@ set(SOURCES
     src/material/color_utils.cpp
     src/primitive/unit_cube.cpp
     src/skybox.cpp
+    src/shader/glsl_types.cpp
 )
 
 set(TEST_SOURCES
