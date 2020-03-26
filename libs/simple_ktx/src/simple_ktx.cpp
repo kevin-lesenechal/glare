@@ -158,4 +158,10 @@ KtxImageWriter KtxFile::write_images_to(std::ostream& output)
     return KtxImageWriter(*this, output);
 }
 
+void KtxFile::rewind_after_header(std::istream& input) const
+{
+    size_t header_size = sizeof header + header.key_value_bytes;
+    input.seekg(header_size, std::ios::beg);
+}
+
 } // ns simple_ktx

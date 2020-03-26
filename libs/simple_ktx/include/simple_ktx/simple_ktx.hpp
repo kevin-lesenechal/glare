@@ -84,6 +84,7 @@ public:
 
     KtxImageReader read_images_from(std::istream& input) const;
     KtxImageWriter write_images_to(std::ostream& output);
+    void rewind_after_header(std::istream& input) const;
 };
 
 KtxFile read_ktx_header(std::istream& input);
