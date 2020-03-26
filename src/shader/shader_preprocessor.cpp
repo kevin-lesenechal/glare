@@ -6,6 +6,7 @@
  ******************************************************************************/
 
 #include "glare/shader/shader_preprocessor.hpp"
+#include "glare/shader/shader_source_loader_interface.hpp"
 
 #include <regex>
 
@@ -24,7 +25,7 @@ std::string ShaderPreprocessor::preprocess(const std::string& source)
     std::string line;
     std::string output;
     std::regex version_regex("^\\s*#version\\s");
-    std::regex include_regex("^\\s*#include [\"<](.*)[\">]\\s*$");
+    std::regex include_regex(R"(^\s*#include ["<](.*)[">]\s*$)");
     bool version_found = false;
     unsigned line_no = 0;
 
@@ -33,7 +34,23 @@ std::string ShaderPreprocessor::preprocess(const std::string& source)
 
         std::smatch matches;
         if (std::regex_search(line, matches, include_regex)) {
-            printf("include = '%s'\n", matches[1].str().c_str());
+            std::string include_file = matches[1].str();
+            m_logger.debug("include file '%s'", include_file.c_str());
+            std::string include_source
+                = m_source_loader.load_source(include_file);
+
+            if (include_source.empty()
+                || include_source[include_source.size() - 1] != '\n') {
+                throw std::runtime_error(
+                    "Expecting text file for GLSL file \"" + include_file
+                    + "\", last line is not terminated: GLARE requires POSIX-"
+                      "conformant text files"
+                );
+            }
+
+            output += "#line 1\n";
+            output += std::regex_replace(include_source, version_regex, "//$&");
+            output += "#line " + std::to_string(line_no + 1) + "\n";
             continue;
         }
 

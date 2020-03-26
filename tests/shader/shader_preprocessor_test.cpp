@@ -51,17 +51,45 @@ void main() {
 
 TEST(shader_preprocessor, simple_include)
 {
-    FsShaderSourceLoader loader;
-    ShaderPreprocessor proc(loader);
-
-    std::string res = proc.preprocess(R"GLSL(#version 330 core
+    std::string base_glsl = R"GLSL(#version 330 core
 
 #include "hello.glsl"
 
 void main() {
     gl_Position = FOO * BAR;
 }
-)GLSL");
+)GLSL";
+    std::string include_glsl = R"GLSL(#version 330 core
+
+float my_function(float n) {
+    return n * 2.0f;
+}
+)GLSL";
+
+    using testing::Return;
+
+    LoaderMock loader;
+    EXPECT_CALL(loader, load_source("hello.glsl"))
+        .WillOnce(Return(include_glsl));
+
+    ShaderPreprocessor proc(loader);
+
+    std::string res = proc.preprocess(base_glsl);
+
+    EXPECT_EQ(R"GLSL(#version 330 core
+
+#line 1
+//#version 330 core
+
+float my_function(float n) {
+    return n * 2.0f;
+}
+#line 4
+
+void main() {
+    gl_Position = FOO * BAR;
+}
+)GLSL", res);
 }
 
 }
