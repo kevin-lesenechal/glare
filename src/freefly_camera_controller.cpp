@@ -165,6 +165,7 @@ void FreeflyCameraController::deactivate()
     m_keyboard_conn.disconnect();
     m_mouse_move_conn.disconnect();
     m_mouse_scroll_conn.disconnect();
+    m_move_bits = 0u;
 }
 
 } // ns glare
