@@ -20,7 +20,7 @@ class PhongShading : public ShadingInterface
 {
 public:
     explicit PhongShading(ShaderProgram& program,
-                          const std::string& material_var = "g_material");
+                          const std::string& material_var = "u_material");
 
     void set_material(const Material& material) override;
 
