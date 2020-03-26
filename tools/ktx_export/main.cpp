@@ -28,7 +28,18 @@ static T log2_int(T n)
     return ret;
 }
 
+static const char* imagemagick_format(GLenum gl_format)
+{
+    switch (gl_format) {
+    case GL_RGB:    return "RGB";
+    case GL_RGBA:   return "RGBA";
+    default:
+        throw std::runtime_error("Unsupported data format");
+    }
+}
+
 void compress_image(Magick::Image& input,
+                    GLenum data_format,
                     GLenum internal_format,
                     std::vector<uint8_t>& output)
 {
@@ -40,7 +51,7 @@ void compress_image(Magick::Image& input,
 
     Magick::Geometry image_size = input.size();
     Magick::Blob blob;
-    input.write(&blob, "RGBA");
+    input.write(&blob, imagemagick_format(data_format));
 
     glTexImage2D(
         GL_TEXTURE_2D,
@@ -48,7 +59,7 @@ void compress_image(Magick::Image& input,
         internal_format,
         image_size.width(), image_size.height(),
         0,
-        GL_RGBA,
+        data_format,
         GL_UNSIGNED_BYTE,
         blob.data()
     );
@@ -157,6 +168,21 @@ int main(int argc, char** argv)
     out_h.pixel_width = px_width;
     out_h.pixel_height = px_height;
 
+    output.block_format = gl_tables::format_block_size(
+        out_h.gl_internal_format
+    );
+
+    GLenum data_format = gl_tables::base_format_for_internal(
+        out_h.gl_internal_format
+    );
+    out_h.gl_base_internal_format = data_format;
+
+    if (!output.block_format.compressed) {
+        out_h.gl_type = GL_UNSIGNED_BYTE;
+        out_h.gl_format = data_format;
+        out_h.gl_type_size = 1;
+    }
+
     write_ktx_header(out_fh, output);
 
     std::cout << "Output: " << options.output_file << std::endl;
@@ -184,7 +210,16 @@ int main(int argc, char** argv)
         }
         input.resize(Magick::Geometry(image.px_width, image.px_height));
 
-        compress_image(input, out_h.gl_internal_format, image.data);
+
+        if (output.block_format.compressed) {
+            compress_image(input, data_format,
+                           out_h.gl_internal_format, image.data);
+        } else {
+            magick::Blob blob;
+            input.write(&blob, imagemagick_format(data_format));
+            image.data.resize(blob.length());
+            std::memcpy(image.data.data(), blob.data(), blob.length());
+        }
         printf(" -> mipmap=%2u; %4u × %-4u px; %4u × %-4u blocks; size=0x%lx\n",
             image.mipmap_level, image.px_width, image.px_height, image.x_blocks,
             image.y_blocks, image.data.size());
