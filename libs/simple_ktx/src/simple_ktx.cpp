@@ -148,7 +148,7 @@ void print_header(FILE* fh, const KtxFileHeader& h)
             h.nr_mipmap_levels);
 }
 
-KtxImageReader KtxFile::read_images_from(std::istream& input)
+KtxImageReader KtxFile::read_images_from(std::istream& input) const
 {
     return KtxImageReader(*this, input);
 }

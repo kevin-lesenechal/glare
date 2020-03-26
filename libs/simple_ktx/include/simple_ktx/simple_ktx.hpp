@@ -82,7 +82,7 @@ public:
     std::map<std::string, std::string> key_values;
     gl_tables::FormatBlockSize block_format;
 
-    KtxImageReader read_images_from(std::istream& input);
+    KtxImageReader read_images_from(std::istream& input) const;
     KtxImageWriter write_images_to(std::ostream& output);
 };
 
