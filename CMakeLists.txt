@@ -121,6 +121,7 @@ add_subdirectory(libs/simple_ktx)
 add_subdirectory(libs/imgui)
 add_subdirectory(libs/stb_image)
 add_subdirectory(tools/ktx_export)
+add_subdirectory(tools/ktx_viewer)
 
 add_library(glare ${SOURCES})
 target_link_libraries(glare
