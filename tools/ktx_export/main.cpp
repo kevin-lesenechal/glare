@@ -10,6 +10,7 @@
 #include "options.hpp"
 
 using namespace simple_ktx;
+namespace magick = Magick;
 
 template<typename T>
 static bool is_power_2(T n)
@@ -38,7 +39,49 @@ static const char* imagemagick_format(GLenum gl_format)
     }
 }
 
-void compress_image(Magick::Image& input,
+static void resize_image(magick::Image& image,
+                         unsigned new_width,
+                         unsigned new_height)
+{
+    magick::Geometry new_size(new_width, new_height);
+
+    if (image.channels() == 4) {
+        std::vector<magick::Image> channels;
+
+        magick::Image r = image.separate(magick::RedChannel);
+        r.resize(new_size);
+        channels.push_back(std::move(r));
+
+        magick::Image g = image.separate(magick::GreenChannel);
+        g.resize(new_size);
+        channels.push_back(std::move(g));
+
+        magick::Image b = image.separate(magick::BlueChannel);
+        b.resize(new_size);
+        channels.push_back(std::move(b));
+
+        magick::Image a = image.separate(magick::AlphaChannel);
+        a.resize(new_size);
+        channels.push_back(std::move(a));
+
+        magick::Image new_image(channels[0]);
+        magick::combineImages(
+            &new_image,
+            channels.begin(), channels.end(),
+            static_cast<MagickCore::ChannelType>(
+               magick::RedChannel
+               | magick::GreenChannel
+               | magick::BlueChannel
+               | magick::AlphaChannel
+            )
+        );
+        image = new_image;
+    } else {
+        image.resize(new_size);
+    }
+}
+
+void compress_image(magick::Image& input,
                     GLenum data_format,
                     GLenum internal_format,
                     std::vector<uint8_t>& output)
@@ -49,8 +92,8 @@ void compress_image(Magick::Image& input,
     glGenTextures(1, &tex_id);
     glBindTexture(GL_TEXTURE_2D, tex_id);
 
-    Magick::Geometry image_size = input.size();
-    Magick::Blob blob;
+    magick::Geometry image_size = input.size();
+    magick::Blob blob;
     input.write(&blob, imagemagick_format(data_format));
 
     glTexImage2D(
@@ -108,7 +151,7 @@ void setup_opengl_context()
 
 int main(int argc, char** argv)
 {
-    Magick::InitializeMagick(*argv);
+    magick::InitializeMagick(*argv);
 
     AppOptions options = parse_options(argc, argv);
 
@@ -119,8 +162,8 @@ int main(int argc, char** argv)
     bool first_image = true;
 
     for (const auto& input_file : options.input_files) {
-        Magick::Image input(input_file);
-        Magick::Geometry size = input.size();
+        magick::Image input(input_file);
+        magick::Geometry size = input.size();
 
         if (size.width() != size.height()) {
             throw std::runtime_error("Rectangular textures aren't supported");
@@ -204,12 +247,11 @@ int main(int argc, char** argv)
         }
 
         std::string input_file = options.input_files[input_index];
-        Magick::Image input(input_file);
+        magick::Image input(input_file);
         if (options.flip_image) {
             input.flip();
         }
-        input.resize(Magick::Geometry(image.px_width, image.px_height));
-
+        resize_image(input, image.px_width, image.px_height);
 
         if (output.block_format.compressed) {
             compress_image(input, data_format,
