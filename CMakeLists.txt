@@ -51,6 +51,7 @@ set(SOURCES
     include/glare/input/mouse_move_event.hpp
     include/glare/input/mouse_scroll_event.hpp
     include/glare/input/mouse_button_event.hpp
+    include/glare/opengl/framebuffer.hpp
     include/glare/opengl/renderbuffer.hpp
 
     src/shader/shader_program.cpp
@@ -80,6 +81,7 @@ set(SOURCES
     src/primitive/unit_cube.cpp
     src/skybox.cpp
     src/shader/glsl_types.cpp
+    src/opengl/framebuffer.cpp
     src/opengl/renderbuffer.cpp
 )
 
