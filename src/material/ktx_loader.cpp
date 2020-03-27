@@ -129,6 +129,13 @@ Texture KtxFileLoader::load_texture(std::istream& input, int unit)
     texture.set_parameter(GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
     texture.set_parameter(GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 
+    if (ext::has_anisotropic_filter) {
+        texture.set_parameter(
+            GL_TEXTURE_MAX_ANISOTROPY,
+            static_cast<float>(GL_MAX_TEXTURE_MAX_ANISOTROPY)
+        );
+    }
+
     return texture;
 }
 
