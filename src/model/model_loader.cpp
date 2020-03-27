@@ -42,6 +42,8 @@ Model ModelLoader::load_from_file(const std::string& file_path)
         );
     }
 
+    m_logger.debug("[ModelLoader] Assimp import completed");
+
     Model model;
 
     process_node(model, scene, scene->mRootNode);

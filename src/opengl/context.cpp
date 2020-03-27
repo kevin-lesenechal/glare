@@ -73,11 +73,6 @@ Context::Context(unsigned window_width,
 
     make_current();
 
-    m_logger.info("[Context] OpenGL %s, %s",
-                  glGetString(GL_VERSION), glGetString(GL_RENDERER));
-    m_logger.info("[Context] GLSL %s",
-                  glGetString(GL_SHADING_LANGUAGE_VERSION));
-
     if (debug) {
         glfwWindowHint(GLFW_OPENGL_DEBUG_CONTEXT, GL_TRUE);
         glDebugMessageCallback(&on_gl_error, this);
@@ -88,6 +83,20 @@ Context::Context(unsigned window_width,
                               GL_DEBUG_SEVERITY_LOW,
                               0, nullptr, GL_TRUE);
     }
+
+    m_logger.info("[Context] OpenGL %s, %s",
+                  glGetString(GL_VERSION), glGetString(GL_RENDERER));
+    m_logger.info("[Context] GLSL %s",
+                  glGetString(GL_SHADING_LANGUAGE_VERSION));
+
+    int depth_bits;
+    glGetFramebufferAttachmentParameteriv(
+        GL_FRAMEBUFFER,
+        GL_DEPTH,
+        GL_FRAMEBUFFER_ATTACHMENT_DEPTH_SIZE,
+        &depth_bits
+    );
+    m_logger.debug("[Context] Depth buffer: %d bits", depth_bits);
 
     query_extensions();
 
