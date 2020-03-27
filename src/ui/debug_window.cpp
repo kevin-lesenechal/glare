@@ -53,10 +53,7 @@ void DebugWindow::draw()
     m_wireframe.draw();
     m_vsync.draw();
     m_culling.draw();
-
-    if (imgui::Button("Reload shaders")) {
-        std::cout << "reload!" << std::endl;
-    }
+    imgui::Checkbox("HDR", &enable_hdr);
 
     imgui::End();
 }

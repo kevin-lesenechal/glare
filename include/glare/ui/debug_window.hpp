@@ -18,6 +18,9 @@ public:
 
     void draw();
 
+public:
+    bool enable_hdr = true;
+
 private:
     double          m_prev_time;
     glare::Checkbox m_wireframe;
