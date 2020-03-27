@@ -189,10 +189,10 @@ int main(int argc, char** argv)
     KtxFile output;
     KtxFileHeader& out_h = output.header;
 
-    if (options.flip_image) {
-        output.key_values["KTXorientation"] = "S=r,T=u";
-    } else {
+    if (options.y_down) {
         output.key_values["KTXorientation"] = "S=r,T=d";
+    } else {
+        output.key_values["KTXorientation"] = "S=r,T=u";
     }
 
     if (options.merge_type == AppOptions::MergeType::Array) {

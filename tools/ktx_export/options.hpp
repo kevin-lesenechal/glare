@@ -22,6 +22,7 @@ struct AppOptions
     std::string format;
     MergeType   merge_type = MergeType::Flat;
     bool        make_mipmaps = true;
+    bool        y_down = false;
     bool        flip_image = true;
 };
 

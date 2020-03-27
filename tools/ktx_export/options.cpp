@@ -20,9 +20,9 @@ static void usage(const char* argv0, const po::options_description& desc)
     << "  Creates a 2D texture containing a compressed version of the PNG image given\n"
     << "  as input into a KTX texture file; mipmaps a generated and saved.\n\n"
     << "2.\n"
-    << "  $ ktx_export input.png --format=GL_RGBA -o output.ktx\n\n"
+    << "  $ ktx_export input.png --format=GL_RGBA8 -o output.ktx\n\n"
     << "  Same as example no 1, excepted a texture format is specified, here it is\n"
-    << "  GL_RGBA: a non-compressed format. If no format is specified, a default \n"
+    << "  GL_RGBA8: a non-compressed format. If no format is specified, a default \n"
     << "  compressed one is used: GL_COMPRESSED_RGBA_S3TC_DXT5_EXT.\n\n"
     << "3.\n"
     << "  $ ktx_export input_{1..6}.png --faces -o output.ktx\n\n"
@@ -68,7 +68,13 @@ AppOptions parse_options(int argc, char** argv)
         ("no-mipmaps", "Do not generate mipmaps.")
         ("y-downward",
             "Use 'S=r,T=d' coordinate system, making the origin 0,0 in the top "
-            "left; OpenGL expect the origin to be in the bottom left.");
+            "left; OpenGL expect the origin to be in the bottom left.")
+        ("input-flipped",
+            "Set this flag if the input image is already flipped, i.e. it uses "
+            "a Y-up coordinate system with the origin 0,0 at the bottom left. "
+            "If using 'S=r,T=d' coordinate system (the default), the image will "
+            "then not be flipped during processing; this does not impact the "
+            "output coordinate system.");
     po::positional_options_description pos_desc;
     pos_desc.add("input", -1);
 
@@ -122,7 +128,8 @@ AppOptions parse_options(int argc, char** argv)
     }
 
     options.make_mipmaps = vars.count("no-mipmaps") == 0;
-    options.flip_image = vars.count("y-downwards") == 0;
+    options.y_down = vars.count("y-downwards");
+    options.flip_image = options.y_down == (vars.count("input-flipped") > 0);
 
     return options;
 }
