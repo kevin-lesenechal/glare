@@ -53,6 +53,7 @@ set(SOURCES
     include/glare/input/mouse_button_event.hpp
     include/glare/opengl/framebuffer.hpp
     include/glare/opengl/renderbuffer.hpp
+    include/glare/shader/program_factory.hpp
 
     src/shader/shader_program.cpp
     src/shader/shader.cpp
@@ -83,6 +84,7 @@ set(SOURCES
     src/shader/glsl_types.cpp
     src/opengl/framebuffer.cpp
     src/opengl/renderbuffer.cpp
+    src/shader/program_factory.cpp
 )
 
 set(TEST_SOURCES
