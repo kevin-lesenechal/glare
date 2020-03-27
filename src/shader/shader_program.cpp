@@ -31,6 +31,22 @@ ShaderProgram::ShaderProgram(std::initializer_list<Shader*> shaders)
     }
 }
 
+ShaderProgram::ShaderProgram(ShaderProgram&& other) noexcept
+  : m_id(other.m_id)
+{
+    other.m_id = 0;
+}
+
+ShaderProgram& ShaderProgram::operator=(ShaderProgram&& other) noexcept
+{
+    if (&other != this) {
+        glDeleteProgram(m_id);
+        m_id = other.m_id;
+        other.m_id = 0;
+    }
+    return *this;
+}
+
 ShaderProgram::~ShaderProgram() noexcept
 {
     glDeleteProgram(m_id);
