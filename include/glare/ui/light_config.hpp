@@ -32,7 +32,16 @@ public:
     glm::vec3 specular;
 
 private:
+    void update_colors();
+
+private:
     std::string m_title;
+    float       m_color_temp;
+    glm::vec3   m_color;
+    float       m_intensity = 0.5f;
+    float       m_ambient_factor = 0.05f;
+    float       m_diffuse_factor = 0.5f;
+    float       m_spec_factor = 0.9f;
 };
 
 } // ns glare
