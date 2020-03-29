@@ -55,6 +55,8 @@ set(SOURCES
     include/glare/opengl/renderbuffer.hpp
     include/glare/hdr_renderer.hpp
     include/glare/shader/autoprogram.hpp
+    include/glare/platform/file_watcher_interface.hpp
+    include/glare/platform/linux/inotify_watcher.hpp
 
     src/shader/shader_program.cpp
     src/shader/shader.cpp
@@ -87,6 +89,7 @@ set(SOURCES
     src/opengl/renderbuffer.cpp
     src/hdr_renderer.cpp
     src/shader/autoprogram.cpp
+    src/platform/linux/inotify_watcher.cpp
 )
 
 set(TEST_SOURCES
