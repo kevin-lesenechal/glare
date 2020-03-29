@@ -100,6 +100,27 @@ void ShaderProgram::upload_binary(const ShaderProgram::Binary& bin)
     glProgramBinary(m_id, bin.format, bin.data.data(), bin.data.size());
 }
 
+unsigned ShaderProgram::attached_shaders_count() const
+{
+    return static_cast<unsigned>(get_parameter(GL_ATTACHED_SHADERS));
+}
+
+void ShaderProgram::detach_all_shaders()
+{
+    std::vector<GLuint> shader_ids(attached_shaders_count());
+    GLsizei count;
+
+    glGetAttachedShaders(m_id, shader_ids.size(), &count, shader_ids.data());
+
+    if (count != shader_ids.size()) {
+        throw std::logic_error("glGetAttachedShaders() returned wrong count");
+    }
+
+    for (GLuint shader_id : shader_ids) {
+        glDetachShader(m_id, shader_id);
+    }
+}
+
 GLint ShaderProgram::uniform_location(const std::string& name)
 {
     GLint location = glGetUniformLocation(m_id, name.c_str());

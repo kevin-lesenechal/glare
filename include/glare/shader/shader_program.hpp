@@ -48,6 +48,9 @@ public:
     Binary download_binary() const;
     void upload_binary(const Binary& bin);
 
+    unsigned attached_shaders_count() const;
+    void detach_all_shaders();
+
     GLint uniform_location(const std::string& name);
 
     GLint get_parameter(GLenum param) const;
