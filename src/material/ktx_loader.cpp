@@ -16,7 +16,7 @@ KtxFileLoader::KtxFileLoader(LoggerInterface& logger)
   : m_logger(logger)
 {}
 
-Texture KtxFileLoader::load_texture(std::istream& input, int unit)
+Texture KtxFileLoader::load_texture(std::istream& input)
 {
     ktx::KtxFile file = ktx::read_ktx_header(input);
     ktx::KtxFileHeader& header = file.header;
@@ -34,7 +34,7 @@ Texture KtxFileLoader::load_texture(std::istream& input, int unit)
         );
     }
 
-    Texture texture(texture_type(header), unit);
+    Texture texture(texture_type(header));
     AnySize total_size = Texture::size_param_for(
         texture.type(),
         header.pixel_width,

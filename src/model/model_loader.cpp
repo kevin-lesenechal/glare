@@ -127,21 +127,11 @@ void ModelLoader::load_mesh_texture(aiMaterial* ai_material,
         return;
     }
 
-    int unit;
-    switch (texture_type) {
-        case aiTextureType_DIFFUSE:     unit = 0; break;
-        case aiTextureType_SPECULAR:    unit = 1; break;
-        case aiTextureType_NORMALS:
-        case aiTextureType_HEIGHT:      unit = 2; break;
-        default:
-            return;
-    }
-
     aiString ai_name;
     // TODO: handle multiple textures
     ai_material->GetTexture(texture_type, 0, &ai_name);
     std::string name(ai_name.C_Str());
-    std::shared_ptr<Texture> texture = m_texture_library.get_texture(name, unit);
+    std::shared_ptr<Texture> texture = m_texture_library.get_texture(name);
 
     switch (texture_type) {
         case aiTextureType_DIFFUSE:

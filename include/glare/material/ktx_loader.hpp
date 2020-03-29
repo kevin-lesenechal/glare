@@ -20,7 +20,7 @@ class KtxFileLoader
 public:
     explicit KtxFileLoader(LoggerInterface& logger = null_logger);
 
-    Texture load_texture(std::istream& input, int unit = 0);
+    Texture load_texture(std::istream& input);
 
 private:
     Texture::Type texture_type(const simple_ktx::KtxFileHeader& ktx_header);

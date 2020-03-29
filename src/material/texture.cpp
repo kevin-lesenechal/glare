@@ -5,15 +5,15 @@
  * MIT license; see LICENSE file for more information.                        *
  ******************************************************************************/
 
-#include <glare/opengl/extensions.hpp>
-#include <stdexcept>
 #include "glare/material/texture.hpp"
+#include "glare/opengl/extensions.hpp"
+
+#include <stdexcept>
 
 namespace glare {
 
-Texture::Texture(Type type, int unit)
-  : m_unit(unit),
-    m_type(type),
+Texture::Texture(Type type)
+  : m_type(type),
     m_immutable(false)
 {
     if (ext::has_dsa) {
@@ -24,8 +24,7 @@ Texture::Texture(Type type, int unit)
 }
 
 Texture::Texture(Texture&& other) noexcept
-  : m_unit(other.m_unit),
-    m_type(other.m_type),
+  : m_type(other.m_type),
     m_id(other.m_id)
 {
     if (&other != this) {
@@ -39,7 +38,6 @@ Texture& Texture::operator=(Texture&& other) noexcept
         glDeleteTextures(1, &m_id);
         m_id = other.m_id;
         other.m_id = 0;
-        m_unit = other.m_unit;
         m_type = other.m_type;
     }
 
@@ -53,7 +51,12 @@ Texture::~Texture() noexcept
 
 void Texture::bind()
 {
-    glActiveTexture(GL_TEXTURE0 + m_unit);
+    glBindTexture(static_cast<GLenum>(m_type), m_id);
+}
+
+void Texture::bind(unsigned unit)
+{
+    glActiveTexture(GL_TEXTURE0 + unit);
     glBindTexture(static_cast<GLenum>(m_type), m_id);
 }
 

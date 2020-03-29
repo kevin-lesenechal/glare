@@ -18,13 +18,13 @@ namespace fs = std::filesystem;
 
 namespace glare {
 
-Texture TextureLoader::load_from_file(const fs::path& file_path, int unit)
+Texture TextureLoader::load_from_file(const fs::path& file_path)
 {
     if (file_path.extension() == ".ktx") {
-        return load_from_ktx_file(file_path, unit);
+        return load_from_ktx_file(file_path);
     }
 
-    Texture texture(Texture::Type::Texture2D, unit);
+    Texture texture(Texture::Type::Texture2D);
     load_into(file_path, texture);
     texture.generate_mipmap();
     texture.set_parameter(GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
@@ -40,7 +40,7 @@ Texture TextureLoader::load_from_file(const fs::path& file_path, int unit)
     return texture;
 }
 
-Texture TextureLoader::load_from_ktx_file(const fs::path& file_path, int unit)
+Texture TextureLoader::load_from_ktx_file(const fs::path& file_path)
 {
     KtxFileLoader loader;
 
@@ -48,7 +48,7 @@ Texture TextureLoader::load_from_ktx_file(const fs::path& file_path, int unit)
     stream.exceptions(std::ifstream::failbit);
     stream.open(file_path, std::ios::binary);
 
-    return loader.load_texture(stream, unit);
+    return loader.load_texture(stream);
 }
 
 void TextureLoader::load_into(const std::filesystem::path& file_path,

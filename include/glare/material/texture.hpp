@@ -33,7 +33,7 @@ public:
     };
 
 public:
-    explicit Texture(Type type, int unit = 0);
+    explicit Texture(Type type);
 
     Texture(const Texture&) = delete;
     Texture& operator=(const Texture&) = delete;
@@ -43,6 +43,7 @@ public:
     ~Texture() noexcept;
 
     void bind();
+    void bind(unsigned unit);
 
     void set_image(GLenum target,
                    int mipmap_level,
@@ -100,9 +101,6 @@ public:
     GLuint id() const noexcept { return m_id; }
 
     [[nodiscard]]
-    int unit() const noexcept { return m_unit; }
-
-    [[nodiscard]]
     Type type() const noexcept { return m_type; }
 
 public:
@@ -122,7 +120,6 @@ public:
                                    bool for_tex_storage = false);
 
 private:
-    int    m_unit;
     Type   m_type;
     GLuint m_id;
     bool   m_immutable;

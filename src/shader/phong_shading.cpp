@@ -22,18 +22,18 @@ void PhongShading::set_material(const Material& material)
 {
     if (material.texture) {
         m_program.set_uniform(m_material_var + ".texture",
-                              material.texture->unit());
-        material.texture->bind();
+                              static_cast<int>(m_texture_unit));
+        material.texture->bind(m_texture_unit);
     }
     if (material.specular_map) {
         m_program.set_uniform(m_material_var + ".specular_map",
-                              material.specular_map->unit());
-        material.specular_map->bind();
+                              static_cast<int>(m_specular_map_unit));
+        material.specular_map->bind(m_specular_map_unit);
     }
     if (material.normal_map) {
         m_program.set_uniform(m_material_var + ".normal_map",
-                              material.normal_map->unit());
-        material.normal_map->bind();
+                              static_cast<int>(m_normal_map_unit));
+        material.normal_map->bind(m_normal_map_unit);
     }
 
     m_program.set_uniform(m_material_var + ".ambient_color",

@@ -28,8 +28,7 @@ public:
     void add_search_path(const std::filesystem::path& path);
 
     [[nodiscard]]
-    std::shared_ptr<Texture> get_texture(const std::string& name,
-                                         int unit) override;
+    std::shared_ptr<Texture> get_texture(const std::string& name) override;
 
     [[nodiscard]]
     std::filesystem::path resolve_texture_path(const std::string& name);

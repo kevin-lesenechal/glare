@@ -18,8 +18,7 @@ class TextureLoader
 {
 public:
     [[nodiscard]]
-    Texture load_from_file(const std::filesystem::path& file_path,
-                           int unit = 0);
+    Texture load_from_file(const std::filesystem::path& file_path);
 
     void load_into(const std::filesystem::path& file_path, Texture& texture);
 
@@ -29,8 +28,7 @@ public:
 
 private:
     [[nodiscard]]
-    Texture load_from_ktx_file(const std::filesystem::path& file_path,
-                               int unit = 0);
+    Texture load_from_ktx_file(const std::filesystem::path& file_path);
 };
 
 } // ns glare

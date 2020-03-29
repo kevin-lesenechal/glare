@@ -23,25 +23,14 @@ void TextureLibrary::add_search_path(const fs::path& path)
     m_search_paths.push_back(path);
 }
 
-std::shared_ptr<Texture> TextureLibrary::get_texture(
-    const std::string& name,
-    int unit
-) {
+std::shared_ptr<Texture> TextureLibrary::get_texture(const std::string& name) {
     m_logger.debug(
-        "[TextureLibrary] Looking for texture \"%s\" (unit %d)", name.c_str(), unit
+        "[TextureLibrary] Looking for texture \"%s\"", name.c_str()
     );
     auto it = m_textures.find(name);
 
     if (it != m_textures.end()) {
         if (std::shared_ptr<Texture> texture = it->second.lock()) {
-            if (texture->unit() != unit) {
-                throw std::runtime_error(
-                    "Requested texture \"" + name + "\" with unit "
-                    + std::to_string(unit) + ", which already exists with unit "
-                    + std::to_string(texture->unit())
-                );
-            }
-
             m_logger.debug("[TextureLibrary] Already loaded");
             return texture;
         }
@@ -50,7 +39,7 @@ std::shared_ptr<Texture> TextureLibrary::get_texture(
     fs::path tex_path = resolve_texture_path(name);
     m_logger.debug("[TextureLibrary] Loading texture at \"%s\"", tex_path.c_str());
     auto texture = std::make_shared<Texture>(
-        m_texture_loader.load_from_file(tex_path, unit)
+        m_texture_loader.load_from_file(tex_path)
     );
 
     m_textures.insert_or_assign(name, texture);

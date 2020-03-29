@@ -19,8 +19,7 @@ class TextureLibraryInterface
 public:
     virtual ~TextureLibraryInterface() noexcept = default;
 
-    virtual std::shared_ptr<Texture> get_texture(const std::string& name,
-                                                 int unit) = 0;
+    virtual std::shared_ptr<Texture> get_texture(const std::string& name) = 0;
 };
 
 } // ns glare

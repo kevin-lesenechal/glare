@@ -40,8 +40,8 @@ Skybox::SkyboxShading::SkyboxShading(ShaderProgram& program)
 
 void Skybox::SkyboxShading::set_material(const Material& material)
 {
-    material.texture->bind();
-    m_program.set_uniform("g_cubemap", material.texture->unit());
+    material.texture->bind(0);
+    m_program.set_uniform("g_cubemap", 0);
 }
 
 } // ns glare

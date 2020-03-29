@@ -27,6 +27,9 @@ public:
 private:
     ShaderProgram&  m_program;
     std::string     m_material_var;
+    unsigned        m_texture_unit = 0;
+    unsigned        m_specular_map_unit = 1;
+    unsigned        m_normal_map_unit = 2;
 };
 
 } // ns glare
