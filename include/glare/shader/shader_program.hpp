@@ -43,7 +43,7 @@ public:
 
     void add_shader(Shader& shader);
     void link();
-    void use();
+    virtual void use();
 
     Binary download_binary() const;
     void upload_binary(const Binary& bin);
