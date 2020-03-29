@@ -98,6 +98,9 @@ public:
 
     void generate_mipmap();
 
+    void set_mipmap_range(unsigned min_level, unsigned max_level);
+    void set_mipmap_count(unsigned nr_levels);
+
     void set_parameter(GLenum param, int value);
 
     void set_parameter(GLenum param, float value);

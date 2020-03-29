@@ -575,6 +575,21 @@ void Texture::generate_mipmap()
     }
 }
 
+void Texture::set_mipmap_range(unsigned min_level, unsigned max_level)
+{
+    set_parameter(GL_TEXTURE_BASE_LEVEL, static_cast<int>(min_level));
+    set_parameter(GL_TEXTURE_MAX_LEVEL, static_cast<int>(max_level));
+}
+
+void Texture::set_mipmap_count(unsigned nr_levels)
+{
+    if (nr_levels == 0) {
+        throw std::logic_error("set_mipmap_count(): nr_levels can't be zero");
+    }
+
+    set_mipmap_range(0, nr_levels - 1);
+}
+
 void Texture::set_parameter(GLenum param, int value)
 {
     if (ext::has_dsa) {
