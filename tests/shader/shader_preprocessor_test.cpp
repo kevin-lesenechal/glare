@@ -20,27 +20,22 @@ TEST(shader_preprocessor, defines)
     FsShaderSourceLoader loader;
     ShaderPreprocessor proc(loader);
 
-    proc.define("FOO", 42);
-    proc.define("BAR", glm::vec3(1.0f, 2.0f, 3.0f));
-    proc.define("BAZ", false);
-    proc.define("M_PI", 3.14159265358979);
-    proc.define("NO_VALUE");
-    proc.define("REMOVE_ME", true);
-    proc.undefine("REMOVE_ME");
+    std::map<std::string, std::string> defines;
+    defines["FOO"] = "42";
+    defines["BAR"] = "vec3(1.0f, 2.0f, 3.0f)";
+    defines["BAZ"] = "false";
 
     std::string res = proc.preprocess(R"GLSL(#version 330 core
 
 void main() {
     gl_Position = FOO * BAR;
 }
-)GLSL");
+)GLSL", defines);
 
     EXPECT_EQ(R"GLSL(#version 330 core
 #define BAR vec3(1.0f, 2.0f, 3.0f)
 #define BAZ false
 #define FOO 42
-#define M_PI 3.14159265358979
-#define NO_VALUE
 #line 2
 
 void main() {
@@ -74,7 +69,7 @@ float my_function(float n) {
 
     ShaderPreprocessor proc(loader);
 
-    std::string res = proc.preprocess(base_glsl);
+    std::string res = proc.preprocess(base_glsl, {});
 
     EXPECT_EQ(R"GLSL(#version 330 core
 

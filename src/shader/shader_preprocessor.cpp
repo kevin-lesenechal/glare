@@ -19,7 +19,9 @@ ShaderPreprocessor::ShaderPreprocessor(
     m_source_loader(source_loader)
 {}
 
-std::string ShaderPreprocessor::preprocess(const std::string& source)
+std::string ShaderPreprocessor::preprocess(
+    const std::string& source,
+    const std::map<std::string, std::string>& defines)
 {
     std::istringstream ss(source);
     std::string line;
@@ -61,7 +63,7 @@ std::string ShaderPreprocessor::preprocess(const std::string& source)
                 throw std::runtime_error("Multiple '#version' found");
             }
 
-            for (const auto& pair : m_defines) {
+            for (const auto& pair : defines) {
                 if (pair.second.empty()) {
                     output += "#define " + pair.first + "\n";
                 } else {
@@ -70,7 +72,7 @@ std::string ShaderPreprocessor::preprocess(const std::string& source)
                 }
             }
 
-            if (!m_defines.empty()) {
+            if (!defines.empty()) {
                 output += "#line " + std::to_string(line_no + 1) + "\n";
             }
             version_found = true;
@@ -82,22 +84,6 @@ std::string ShaderPreprocessor::preprocess(const std::string& source)
     }
 
     return output;
-}
-
-void ShaderPreprocessor::define(const std::string& key)
-{
-    define_expr(key, "");
-}
-
-void ShaderPreprocessor::define_expr(const std::string& key,
-                                     const std::string& expr)
-{
-    m_defines[key] = expr;
-}
-
-void ShaderPreprocessor::undefine(const std::string& key)
-{
-    m_defines.erase(key);
 }
 
 } // ns glare
