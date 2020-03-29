@@ -49,6 +49,11 @@ public:
 
     void attach(const Renderbuffer& renderbuffer, Attachment attachment);
 
+    void set_draw_buffer(unsigned color_index);
+    void set_color_read_buffer(unsigned color_index);
+    void disable_draw_buffer();
+    void disable_color_read_buffer();
+
     void ensure_complete();
 
 private:

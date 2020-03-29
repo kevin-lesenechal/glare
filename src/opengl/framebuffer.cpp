@@ -120,4 +120,44 @@ void Framebuffer::ensure_complete()
     }
 }
 
+void Framebuffer::set_draw_buffer(unsigned color_index)
+{
+    if (ext::has_dsa) {
+        glNamedFramebufferDrawBuffer(m_id, GL_COLOR_ATTACHMENT0 + color_index);
+    } else {
+        bind();
+        glDrawBuffer(GL_COLOR_ATTACHMENT0 + color_index);
+    }
+}
+
+void Framebuffer::set_color_read_buffer(unsigned color_index)
+{
+    if (ext::has_dsa) {
+        glNamedFramebufferReadBuffer(m_id, GL_COLOR_ATTACHMENT0 + color_index);
+    } else {
+        bind();
+        glReadBuffer(GL_COLOR_ATTACHMENT0 + color_index);
+    }
+}
+
+void Framebuffer::disable_draw_buffer()
+{
+    if (ext::has_dsa) {
+        glNamedFramebufferDrawBuffer(m_id, GL_NONE);
+    } else {
+        bind();
+        glDrawBuffer(GL_NONE);
+    }
+}
+
+void Framebuffer::disable_color_read_buffer()
+{
+    if (ext::has_dsa) {
+        glNamedFramebufferReadBuffer(m_id, GL_NONE);
+    } else {
+        bind();
+        glReadBuffer(GL_NONE);
+    }
+}
+
 } // ns glare
