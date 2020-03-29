@@ -490,6 +490,81 @@ void Texture::allocate_storage(GLint internal_format,
     m_immutable = true;
 }
 
+void Texture::allocate_multisample_storage(GLenum internal_format,
+                                           unsigned samples,
+                                           AnySize image_size,
+                                           bool fixed_locations)
+{
+    switch (image_size.tag) {
+    case AnySize::Tag::Size1D:
+        throw std::runtime_error(
+            "Unsupported 1D size for multisample storage allocation"
+        );
+
+    case AnySize::Tag::Size2D:
+        if (m_type != Type::Texture2DMultisample) {
+            throw std::runtime_error(
+                "Expecting 'Texture2DMultisample' texture type for "
+                "Size2D multisample storage allocation"
+            );
+        }
+
+        if (ext::has_dsa) {
+            glTextureStorage2DMultisample(
+                m_id,
+                samples,
+                internal_format,
+                image_size.size_2d.width, image_size.size_2d.height,
+                fixed_locations
+            );
+        } else {
+            bind();
+            glTexImage2DMultisample(
+                static_cast<GLenum>(m_type),
+                samples,
+                internal_format,
+                image_size.size_2d.width, image_size.size_2d.height,
+                fixed_locations
+            );
+        }
+        break;
+
+    case AnySize::Tag::Size3D:
+        if (m_type != Type::Texture2DMultisampleArray) {
+            throw std::runtime_error(
+                "Expecting 'Texture2DMultisampleArray' texture type for "
+                "Size3D multisample storage allocation"
+            );
+        }
+
+        if (ext::has_dsa) {
+            glTextureStorage3DMultisample(
+                m_id,
+                samples,
+                internal_format,
+                image_size.size_3d.width,
+                image_size.size_3d.height,
+                image_size.size_3d.depth,
+                fixed_locations
+            );
+        } else {
+            bind();
+            glTexImage3DMultisample(
+                static_cast<GLenum>(m_type),
+                samples,
+                internal_format,
+                image_size.size_3d.width,
+                image_size.size_3d.height,
+                image_size.size_3d.depth,
+                fixed_locations
+            );
+        }
+        break;
+    }
+
+    m_immutable = true;
+}
+
 void Texture::generate_mipmap()
 {
     if (ext::has_dsa) {

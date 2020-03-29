@@ -91,6 +91,11 @@ public:
                           unsigned mipmap_levels,
                           AnySize size);
 
+    void allocate_multisample_storage(GLenum internal_format,
+                                      unsigned samples,
+                                      AnySize image_size,
+                                      bool fixed_locations);
+
     void generate_mipmap();
 
     void set_parameter(GLenum param, int value);
