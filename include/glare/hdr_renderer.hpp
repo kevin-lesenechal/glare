@@ -22,6 +22,7 @@ public:
 
     void start_scene();
     void end_scene_draw();
+    void resize(Size2D new_size);
 
     HdrRenderer(const HdrRenderer&) = delete;
     HdrRenderer& operator=(const HdrRenderer&) = delete;

@@ -51,6 +51,25 @@ void HdrRenderer::end_scene_draw()
     glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
 }
 
+void HdrRenderer::resize(Size2D new_size)
+{
+    Texture new_color_buffer(
+        m_nr_samples > 0 ? Texture::Type::Texture2DMultisample
+                         : Texture::Type::Texture2D
+    );
+    Renderbuffer new_depth_buffer;
+
+    setup_buffers(new_color_buffer, new_depth_buffer, new_size);
+
+    m_framebuffer.attach(new_color_buffer, Framebuffer::Attachment::Color0);
+    m_framebuffer.attach(new_depth_buffer, Framebuffer::Attachment::Depth);
+    m_framebuffer.ensure_complete();
+    m_framebuffer.unbind();
+
+    m_color_buffer = std::move(new_color_buffer);
+    m_depth_buffer = std::move(new_depth_buffer);
+}
+
 void HdrRenderer::setup_buffers(Texture& color_buffer,
                                 Renderbuffer& depth_buffer,
                                 Size2D size)
