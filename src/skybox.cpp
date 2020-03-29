@@ -24,8 +24,9 @@ void Skybox::draw(const glm::mat4& projection_mx, const glm::mat4& view_mx)
     m_program.use();
 
     glm::mat4 center_view = glm::mat4(glm::mat3(view_mx));
-    m_program.set_uniform("g_view_mx", center_view);
-    m_program.set_uniform("g_proj_mx", projection_mx);
+    m_program.set_uniform("u_view_mx", center_view);
+    m_program.set_uniform("u_proj_mx", projection_mx);
+    m_program.set_uniform("u_gamma_correct", m_gamma_correct);
 
     glFrontFace(GL_CW);
     glDepthFunc(GL_LEQUAL);

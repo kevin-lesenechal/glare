@@ -32,10 +32,14 @@ public:
 
     void draw(const glm::mat4& projection_mx, const glm::mat4& view_mx);
 
+    void set_gamma_correct(bool gamma_correct) noexcept
+    { m_gamma_correct = gamma_correct; }
+
 private:
     UnitCube m_unit_cube;
     ShaderProgram& m_program;
     SkyboxShading m_shading;
+    bool          m_gamma_correct = false;
 };
 
 } // ns glare
