@@ -18,7 +18,7 @@ class ShaderProgram;
 class HdrRenderer
 {
 public:
-    explicit HdrRenderer(ShaderProgram& program);
+    HdrRenderer(ShaderProgram& program, Size2D size, unsigned nr_samples = 0);
 
     void start_scene();
     void end_scene_draw();
@@ -29,10 +29,16 @@ public:
     HdrRenderer& operator=(HdrRenderer&&) noexcept = default;
 
 private:
+    void setup_buffers(Texture& color_buffer,
+                       Renderbuffer& depth_buffer,
+                       Size2D size);
+
+private:
     Framebuffer     m_framebuffer;
     Texture         m_color_buffer;
     Renderbuffer    m_depth_buffer;
     ShaderProgram&  m_program;
+    unsigned        m_nr_samples;
 };
 
 } // ns glare
