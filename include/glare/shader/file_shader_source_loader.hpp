@@ -14,7 +14,7 @@
 
 namespace glare {
 
-class FsShaderSourceLoader : public ShaderSourceLoaderInterface
+class FileShaderSourceLoader : public ShaderSourceLoaderInterface
 {
 public:
     /**
@@ -22,6 +22,7 @@ public:
      * @param name A symbolic name (e.g. "foo/bar.glsl")
      * @return The entire source file content
      */
+    [[nodiscard]]
     std::string load_source(const std::string& name) override;
 
     /**

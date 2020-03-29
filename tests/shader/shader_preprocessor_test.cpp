@@ -1,5 +1,5 @@
 #include "glare/shader/shader_preprocessor.hpp"
-#include "glare/shader/fs_shader_source_loader.hpp"
+#include "glare/shader/file_shader_source_loader.hpp"
 
 #include <gmock/gmock.h>
 #include <gtest/gtest.h>
@@ -17,7 +17,7 @@ public:
 
 TEST(shader_preprocessor, defines)
 {
-    FsShaderSourceLoader loader;
+    FileShaderSourceLoader loader;
     ShaderPreprocessor proc(loader);
 
     std::map<std::string, std::string> defines;

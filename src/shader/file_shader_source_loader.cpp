@@ -5,7 +5,7 @@
  * MIT license; see LICENSE file for more information.                        *
  ******************************************************************************/
 
-#include "glare/shader/fs_shader_source_loader.hpp"
+#include "glare/shader/file_shader_source_loader.hpp"
 
 #include <fstream>
 
@@ -13,7 +13,7 @@ namespace fs = std::filesystem;
 
 namespace glare {
 
-std::string FsShaderSourceLoader::load_source(const std::string& name)
+std::string FileShaderSourceLoader::load_source(const std::string& name)
 {
     fs::path shader_path = resolve_shader_path(name);
 
@@ -32,7 +32,7 @@ std::string FsShaderSourceLoader::load_source(const std::string& name)
     return ss.str();
 }
 
-fs::path FsShaderSourceLoader::resolve_shader_path(const std::string& name)
+fs::path FileShaderSourceLoader::resolve_shader_path(const std::string& name)
 {
     for (const auto& search_path : m_search_paths) {
         fs::path shader_path = search_path / name;
@@ -55,7 +55,7 @@ fs::path FsShaderSourceLoader::resolve_shader_path(const std::string& name)
     );
 }
 
-void FsShaderSourceLoader::add_search_path(const std::filesystem::path& path)
+void FileShaderSourceLoader::add_search_path(const std::filesystem::path& path)
 {
     if (!fs::is_directory(path)) {
         throw std::runtime_error(
