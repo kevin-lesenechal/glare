@@ -191,4 +191,7 @@ void ShaderProgram::set_uniform(GLint loc, const glm::mat3& mat)
 void ShaderProgram::set_uniform(GLint loc, const glm::mat2& mat)
 { glUniformMatrix2fv(loc, 1, GL_FALSE, glm::value_ptr(mat)); }
 
+void ShaderProgram::set_uniform(GLint loc, bool n)
+{ glUniform1i(loc, n ? 1 : 0); }
+
 } // ns glare

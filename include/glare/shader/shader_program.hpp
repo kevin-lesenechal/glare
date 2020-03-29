@@ -54,6 +54,7 @@ public:
     GLint uniform_location(const std::string& name);
 
     GLint get_parameter(GLenum param) const;
+
     void set_parameter(GLenum param, int value);
 
     void set_uniform(GLint loc, float n);
@@ -70,6 +71,8 @@ public:
     void set_uniform(GLint loc, const glm::uvec2& vec);
     void set_uniform(GLint loc, const glm::uvec3& vec);
     void set_uniform(GLint loc, const glm::uvec4& vec);
+
+    void set_uniform(GLint loc, bool n);
 
     void set_uniform(GLint loc, const glm::mat4& mat);
     void set_uniform(GLint loc, const glm::mat3& mat);
